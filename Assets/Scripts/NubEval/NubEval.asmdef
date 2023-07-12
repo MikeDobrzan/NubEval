@@ -1,7 +1,10 @@
 {
     "name": "NubEval",
     "rootNamespace": "NubEval",
-    "references": [],
+    "references": [
+        "GUID:4937c1a1844d6444f950143d9aa9c50b",
+        "GUID:29c4538fd8748884fbeb7db1cc05f1cc"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

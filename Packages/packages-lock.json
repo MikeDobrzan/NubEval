@@ -1,5 +1,14 @@
 {
   "dependencies": {
+    "com.pubnub.sdk": {
+      "version": "https://github.com/pubnub/unity.git?path=/PubNubUnity/Assets/PubNub#7-overhaul",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {
+        "com.unity.nuget.newtonsoft-json": "3.0.2"
+      },
+      "hash": "283f041c7f709e4303057e0eed6c11464b537fe5"
+    },
     "com.unity.2d.animation": {
       "version": "9.0.3",
       "depth": 1,
@@ -162,6 +171,13 @@
     },
     "com.unity.mathematics": {
       "version": "1.2.6",
+      "depth": 1,
+      "source": "registry",
+      "dependencies": {},
+      "url": "https://packages.unity.com"
+    },
+    "com.unity.nuget.newtonsoft-json": {
+      "version": "3.2.1",
       "depth": 1,
       "source": "registry",
       "dependencies": {},
