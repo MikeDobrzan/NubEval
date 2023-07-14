@@ -10,7 +10,7 @@ namespace NubEval
         [SerializeField] private string displayName;
 
         public string GameAccountId => gameAccountId;
-        public string UserID => pubnubUserId;
+        public string PubNubUserID => pubnubUserId;
         public string DisplayName => displayName;
     }
 }

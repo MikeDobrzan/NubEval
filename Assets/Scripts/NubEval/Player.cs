@@ -9,8 +9,8 @@ namespace NubEval
 {
     public class Player : MonoBehaviour
     {
-        [SerializeField] private string channel;
         [SerializeField] private string message;
+        [SerializeField] private Match testMatch;
         [SerializeField] private PNConfigAsset config;
 
         //[SerializeField] private long lastMsgTimetoken;
@@ -42,11 +42,11 @@ namespace NubEval
             _listener.onObject += OnPnObject;
             _listener.onSignal += OnPnSignal;
             _listener.onMessageAction += OnPnMessageAction;
-
-            messenger = new PNMessenger(_pubnub);
-
+          
             // Initialize will create a PubNub instance, pass the configuration object, and prepare the listener. 
             _pubnub = Initialize(userId);
+
+            messenger = new PNMessenger(_pubnub);
 
             // Subscribe example
             _pubnub.Subscribe<string>().Channels(new[] { Channels.MainChannel }).Execute();
@@ -83,6 +83,16 @@ namespace NubEval
             _pubnub = new Pubnub(pnConfiguration);
             _pubnub.AddListener(_listener);
             return _pubnub;
+        }
+
+        public async void SendNetworkObject()
+        {
+            (bool, MessageID) msg = await messenger.SendMsg(testMatch, Channels.MainChannel);
+
+            if (msg.Item1 == false)
+                return;
+            else
+                lastMsg = msg.Item2;
         }
 
         public async void SendMsg()
