@@ -1,17 +1,19 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace NubEval
 {
     public class Bootloader : MonoBehaviour
     {
-        [SerializeField] private PNManager userA;
-        [SerializeField] private PNManager userB;
+        [SerializeField] private PNWrapper pnWrapper;
+        [SerializeField] private AddUserController addUserUI;
 
-        void Start()
+        private async void Start()
         {
-            Debug.Log("Boot!");
+            //Initialize PubNub
+            await pnWrapper.Init();
+            Debug.Log("Boot Complete!");
+
+            addUserUI.Cosntruct(pnWrapper);           
         }
     }
 }

@@ -3,7 +3,7 @@ using NubEval.Networking;
 using PubnubApi;
 using System.Threading.Tasks;
 
-namespace NubEval.Game.Networking
+namespace NubEval.Networking.PubNubWrapper
 {
     public class PNMessenger
     {
