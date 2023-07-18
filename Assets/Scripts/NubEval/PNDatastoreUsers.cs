@@ -40,10 +40,19 @@ namespace NubEval.Networking.PubNubWrapper
                 .IncludeCustom(false)
                 .ExecuteAsync();
 
-            var data = new UserAccountData(response.Result.ExternalId, response.Result.Uuid, response.Result.Name);
-
             if (response != null && !response.Status.Error)
-                return (true, data);
+            {
+                if (response.Result != null)
+                {
+                    var data = new UserAccountData(response.Result.ExternalId, response.Result.Uuid, response.Result.Name);
+                    return (true, data);
+                }
+                else
+                {
+                    var data = new UserAccountData("null", response.Result.Uuid, "null");
+                    return (true, data); // maybe return false?
+                }
+            }
             else
                 return (false, default);
         }

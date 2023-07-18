@@ -3,7 +3,8 @@
     "rootNamespace": "NubEval",
     "references": [
         "GUID:4937c1a1844d6444f950143d9aa9c50b",
-        "GUID:29c4538fd8748884fbeb7db1cc05f1cc"
+        "GUID:29c4538fd8748884fbeb7db1cc05f1cc",
+        "GUID:6055be8ebefd69e48b49212b09b47b2f"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace NubEval
 {
+    [System.Serializable]
     public struct PresenceState
     {
         public string StateType;

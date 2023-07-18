@@ -34,7 +34,7 @@ namespace NubEval
         public PNMessenger MessageDispatcher => _messages;
         public PNPresence Presence => _presence;
 
-        public async Task Init()
+        public async Task<PNWrapper> Init()
         {
             _listener = new SubscribeCallbackListener();
             _connection = new PNConnection(userId, config);
@@ -60,9 +60,9 @@ namespace NubEval
             await Task.Delay(1000);
             _pubnub.Subscribe<string>().Channels(new[] { Channels.Lobby }).Execute();
 
-            await Task.Delay(500);
-            await Presence.ChannelJoin(Channels.MainChannel, new PresenceState("lobbyState", "idle"));
-            await Task.Delay(1000);
+
+
+            return this;
         }
 
         public async void SendNetworkObject()
