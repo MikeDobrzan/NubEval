@@ -153,6 +153,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   message: Ping!
+  channel: rf
   testMatch:
     MatchID: 231564
     MatchStatus: 1

@@ -8,12 +8,14 @@ namespace NubEval
     {
         void INetworkEventHandler.OnPnStatus(Pubnub pn, PNStatus status)
         {
-            Debug.Log(status.Category == PNStatusCategory.PNConnectedCategory ? "Connected" : "Not connected");
+            string msg = status.Category == PNStatusCategory.PNConnectedCategory ? "Connected" : "Not connected";
+
+            Debug.Log(msg);
         }
 
         void INetworkEventHandler.OnPnMessage(Pubnub pn, PNMessageResult<object> result)
         {
-            Debug.Log($"Message received: {result.Message} | {result.Publisher} | {result.Timetoken}");
+            Debug.Log($"Message received: ch={result.Channel} | {result.Message} | {result.Publisher} | {result.Timetoken}");
         }
 
         void INetworkEventHandler.OnPnMessageAction(Pubnub pn, PNMessageActionEventResult result)

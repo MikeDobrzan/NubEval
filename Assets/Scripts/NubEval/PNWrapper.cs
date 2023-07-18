@@ -10,13 +10,14 @@ namespace NubEval
     public class PNWrapper : MonoBehaviour
     {
         [SerializeField] private string message;
+        [SerializeField] private string channel;
         [SerializeField] private Match testMatch;
         [SerializeField] private PNConfigAsset config;
 
         [SerializeField] private MessageID lastMsg;
 
         private Pubnub _pubnub;
-        private SubscribeCallbackListener _listener = new SubscribeCallbackListener();
+        private SubscribeCallbackListener _listener;
 
         // UserId identifies this client.
         public string userId;
@@ -24,20 +25,25 @@ namespace NubEval
         private PNMessenger _messages;
         private PNConnection _connection;
         private PNDatastoreUsers _dataUsers;
+        private PNPresence _presence;
         private INetworkEventHandler _networkEventHandler;
 
         public Pubnub Pubnub => _pubnub;
         public PNConnection Connection => _connection;
         public PNDatastoreUsers DataUsers => _dataUsers;
+        public PNMessenger MessageDispatcher => _messages;
+        public PNPresence Presence => _presence;
 
         public async Task Init()
         {
+            _listener = new SubscribeCallbackListener();
             _connection = new PNConnection(userId, config);
-            _pubnub = _connection.Connect(_listener);
-            _messages = new PNMessenger(_pubnub);
+            _pubnub = _connection.ConnectListener(_listener);
             _networkEventHandler = new NetworkEventsHandler();
-            _dataUsers = new PNDatastoreUsers(_pubnub, userId);
 
+            _messages = new PNMessenger(_pubnub);
+            _presence = new PNPresence(_pubnub, userId);
+            _dataUsers = new PNDatastoreUsers(_pubnub, userId);
 
             // Listener example.
             _listener.onStatus += _networkEventHandler.OnPnStatus;
@@ -48,18 +54,20 @@ namespace NubEval
             _listener.onSignal += _networkEventHandler.OnPnSignal;
             _listener.onMessageAction += _networkEventHandler.OnPnMessageAction;
 
-            // Subscribe example
-            _pubnub.Subscribe<string>().Channels(new[] { Channels.MainChannel }).Execute();
+            _pubnub.Subscribe<string>().Channels(new[] { "Channel-Barcelona" }).Execute();
+            await Task.Delay(1000);
+            //_pubnub.Subscribe<string>().Channels(new[] { "ch3" }).Execute();
+            await Task.Delay(1000);
+            _pubnub.Subscribe<string>().Channels(new[] { Channels.Lobby }).Execute();
 
-            // Publish example
-            var bla = await _messages.SendMsg("Hello World from Unity!", Channels.MainChannel);
-
-            await Task.Delay(2000);
+            await Task.Delay(500);
+            await Presence.ChannelJoin(Channels.MainChannel, new PresenceState("lobbyState", "idle"));
+            await Task.Delay(1000);
         }
 
         public async void SendNetworkObject()
         {
-            (bool, MessageID) msg = await _messages.SendMsg(testMatch, Channels.MainChannel);
+            (bool, MessageID) msg = await MessageDispatcher.SendMsg(testMatch, Channels.MainChannel);
 
             if (msg.Item1 == false)
                 return;
@@ -69,7 +77,12 @@ namespace NubEval
 
         public async void SendMsg()
         {
-            (bool, MessageID) msg = await _messages.SendMsg(message, Channels.MainChannel);
+            await SendMsg(message, channel);
+        }
+
+        private async Task SendMsg(string message, string channel)
+        {
+            (bool, MessageID) msg = await MessageDispatcher.SendMsg(message, channel);
 
             if (msg.Item1 == false)
                 return;

@@ -16,7 +16,7 @@ namespace NubEval.Networking.PubNubWrapper
 
         public async Task<(bool, MessageID)> SendMsg(string msg, string channel)
         {
-            var response = await _pubnub.Publish().Channel(Channels.MainChannel).Message(msg).ExecuteAsync();
+            var response = await _pubnub.Publish().Channel(channel).Message(msg).ExecuteAsync();
             var timeToken = response.Result.Timetoken;
 
             if (response.Status != null || response.Status.Error)
@@ -27,7 +27,7 @@ namespace NubEval.Networking.PubNubWrapper
 
         public async Task<(bool, MessageID)> SendMsg(INetworkDataObject obj, string channel)
         {
-            var response = await _pubnub.Publish().Channel(Channels.MainChannel).Message(obj).ExecuteAsync();
+            var response = await _pubnub.Publish().Channel(channel).Message(obj).ExecuteAsync();
             var timeToken = response.Result.Timetoken;
 
             if (response.Status != null || response.Status.Error)

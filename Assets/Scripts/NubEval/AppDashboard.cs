@@ -27,16 +27,6 @@ namespace NubEval
                     Debug.LogWarning($"{response.Status.ErrorData.Information}");
                 }
             }
-
-            //if (response != null)
-            //{
-            //    Debug.Log($"Created Channel Data: [{Channels.Lobby}]");
-            //    Debug.Log($"{response.Status.Category} | {response.Result.Updated}");
-            //}
-            //else
-            //{
-            //    Debug.Log("Error!");
-            //}
         }
 
         public async void GetAppChannels()

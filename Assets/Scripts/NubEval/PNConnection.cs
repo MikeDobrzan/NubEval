@@ -9,7 +9,6 @@ namespace NubEval.Networking.PubNubWrapper
     {
         private readonly UserId _userId;
         private readonly PNConfigAsset _config;
-        //private Pubnub _pubnub;
 
         public PNConnection(UserId userId, PNConfigAsset config)
         {
@@ -26,7 +25,7 @@ namespace NubEval.Networking.PubNubWrapper
 
         public UserId UserID => _userId;
 
-        public Pubnub Connect(SubscribeCallbackListener listener)
+        public Pubnub ConnectListener(SubscribeCallbackListener listener)
         {
             var pubnub = Initialize(_userId);
             pubnub.AddListener(listener);
@@ -40,14 +39,8 @@ namespace NubEval.Networking.PubNubWrapper
             PNConfiguration pnConfiguration = new PNConfiguration(user);
             pnConfiguration.SubscribeKey = _config.SubscribeKey;
             pnConfiguration.PublishKey = _config.PublishKey;
-
-            //if (_pubnub is not null)
-            //{
-            //    Debug.LogError("PubNub has already been initialized");
-            //    return _pubnub;
-            //}
-
             pnConfiguration.UserId = userId;
+
             var pubnub = new Pubnub(pnConfiguration);
             return pubnub;
         }
