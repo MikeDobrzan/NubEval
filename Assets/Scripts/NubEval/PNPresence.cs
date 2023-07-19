@@ -8,13 +8,14 @@ namespace NubEval
     public class PNPresence
     {
         private readonly Pubnub _pn;
-        private readonly UserId currentUser;
 
-        public PNPresence(Pubnub pubnub, UserId userID)
+        public PNPresence(Pubnub pubnub)
         {
             _pn = pubnub;
-            currentUser = userID;
         }
+
+        private UserId CurrentUser => _pn.GetCurrentUserId();
+
 
         public async Task<Dictionary<UserId, ConnectedUser>> GetUsersInChannel(string channel)
         {
@@ -109,7 +110,7 @@ namespace NubEval
 
         public async Task<List<PresenceState>> GetStatesCurrentUser(string channel)
         {
-            return await GetStates(channel, currentUser);
+            return await GetStates(channel, CurrentUser);
         }
 
 

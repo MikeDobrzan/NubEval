@@ -8,14 +8,14 @@ namespace NubEval.Networking.PubNubWrapper
 
     public class PNDatastoreUsers
     {
-        private readonly UserId _userID;
         private readonly Pubnub _pn;
 
-        public PNDatastoreUsers(Pubnub pubnub, UserId userID)
+        public PNDatastoreUsers(Pubnub pubnub)
         {
-            _userID = userID;
             _pn = pubnub;
         }
+
+        private UserId CurrentUserID => _pn.GetCurrentUserId();
 
         public async Task<List<UserId>> GetAllUserIDs()
         {

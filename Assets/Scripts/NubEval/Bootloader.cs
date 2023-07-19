@@ -1,4 +1,5 @@
 using NubEval.Game.Networking.Data;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -18,6 +19,14 @@ namespace NubEval
             Debug.Log("Boot Complete!");
             await Task.Delay(1000);
             lobby.Construct(pn);
+
+            List<Channel> channels = new List<Channel>
+            {
+                new Channel(Channels.MainChannel, ChannelType.PresenceChannel),
+                new Channel(Channels.Lobby, ChannelType.PresenceChannel)
+            };
+
+            pn.Subscriptions.SubscribeChannels(channels);
 
             await Task.Delay(500);
             await pn.Presence.ChannelJoin(Channels.MainChannel, new PresenceState("lobbyState", "idle"));

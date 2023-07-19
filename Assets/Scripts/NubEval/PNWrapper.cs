@@ -22,7 +22,8 @@ namespace NubEval
         // UserId identifies this client.
         public string userId;
 
-        private PNMessenger _messages;
+        private PNPublish _messages;
+        private PNSubscribe _subscribe;
         private PNConnection _connection;
         private PNDatastoreUsers _dataUsers;
         private PNPresence _presence;
@@ -31,8 +32,9 @@ namespace NubEval
         public Pubnub Pubnub => _pubnub;
         public PNConnection Connection => _connection;
         public PNDatastoreUsers DataUsers => _dataUsers;
-        public PNMessenger MessageDispatcher => _messages;
+        public PNPublish MessageDispatcher => _messages;
         public PNPresence Presence => _presence;
+        public PNSubscribe Subscriptions => _subscribe;
 
         public async Task<PNWrapper> Init()
         {
@@ -40,10 +42,11 @@ namespace NubEval
             _connection = new PNConnection(userId, config);
             _pubnub = _connection.ConnectListener(_listener);
             _networkEventHandler = new NetworkEventsHandler();
+            _subscribe = new PNSubscribe(_pubnub);
 
-            _messages = new PNMessenger(_pubnub);
-            _presence = new PNPresence(_pubnub, userId);
-            _dataUsers = new PNDatastoreUsers(_pubnub, userId);
+            _messages = new PNPublish(_pubnub);
+            _presence = new PNPresence(_pubnub);
+            _dataUsers = new PNDatastoreUsers(_pubnub);
 
             // Listener example.
             _listener.onStatus += _networkEventHandler.OnPnStatus;
@@ -53,14 +56,6 @@ namespace NubEval
             _listener.onObject += _networkEventHandler.OnPnObject;
             _listener.onSignal += _networkEventHandler.OnPnSignal;
             _listener.onMessageAction += _networkEventHandler.OnPnMessageAction;
-
-            _pubnub.Subscribe<string>().Channels(new[] { "Channel-Barcelona" }).Execute();
-            await Task.Delay(1000);
-            //_pubnub.Subscribe<string>().Channels(new[] { "ch3" }).Execute();
-            await Task.Delay(1000);
-            _pubnub.Subscribe<string>().Channels(new[] { Channels.Lobby }).Execute();
-
-
 
             return this;
         }

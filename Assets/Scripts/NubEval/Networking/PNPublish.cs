@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 
 namespace NubEval.Networking.PubNubWrapper
 {
-    public class PNMessenger
+    public class PNPublish
     {
         private Pubnub _pubnub;
 
-        public PNMessenger(Pubnub pn)
+        public PNPublish(Pubnub pn)
         {
             _pubnub = pn;
         }
