@@ -4,23 +4,24 @@ using PubnubApi;
 using PubnubApi.Unity;
 using System.Threading.Tasks;
 using UnityEngine;
+using System.Threading;
 
 namespace NubEval
 {
-    public class PNWrapper : MonoBehaviour
-    {
-        [SerializeField] private string message;
-        [SerializeField] private string channel;
-        [SerializeField] private Match testMatch;
-        [SerializeField] private PNConfigAsset config;
 
-        [SerializeField] private MessageID lastMsg;
+    /// <summary>
+    /// UserDevice
+    /// </summary>
+    public class PNDevice : MonoBehaviour
+    {
+        [SerializeField] private PNConfigDataAsset configAsset;
+        [SerializeField] private string deviceID;
 
         private Pubnub _pubnub;
         private SubscribeCallbackListener _listener;
 
         // UserId identifies this client.
-        public string userId;
+        public UserAccountData account;
 
         private PNPublish _messages;
         private PNSubscribe _subscribe;
@@ -36,14 +37,16 @@ namespace NubEval
         public PNPresence Presence => _presence;
         public PNSubscribe Subscriptions => _subscribe;
 
-        public async Task<PNWrapper> Init()
+        public async Task<PNDevice> Init()
         {
             _listener = new SubscribeCallbackListener();
-            _connection = new PNConnection(userId, config);
-            _pubnub = _connection.ConnectListener(_listener);
-            _networkEventHandler = new NetworkEventsHandler();
-            _subscribe = new PNSubscribe(_pubnub);
+            _connection = new PNConnection(account, configAsset.Data);
 
+            var cts = new CancellationTokenSource(5000); //If not connected after 5sec;
+            _pubnub = await _connection.SetListener(_listener, cts.Token);
+
+            _networkEventHandler = new NetworkEventsHandler(deviceID);
+            _subscribe = new PNSubscribe(_pubnub);
             _messages = new PNPublish(_pubnub);
             _presence = new PNPresence(_pubnub);
             _dataUsers = new PNDatastoreUsers(_pubnub);
@@ -60,32 +63,7 @@ namespace NubEval
             return this;
         }
 
-        public async void SendNetworkObject()
-        {
-            (bool, MessageID) msg = await MessageDispatcher.SendMsg(testMatch, Channels.MainChannel);
-
-            if (msg.Item1 == false)
-                return;
-            else
-                lastMsg = msg.Item2;
-        }
-
-        public async void SendMsg()
-        {
-            await SendMsg(message, channel);
-        }
-
-        private async Task SendMsg(string message, string channel)
-        {
-            (bool, MessageID) msg = await MessageDispatcher.SendMsg(message, channel);
-
-            if (msg.Item1 == false)
-                return;
-            else
-                lastMsg = msg.Item2;
-        }
-
-        private void OnDestroy()
+       private void OnDestroy()
         {
             _pubnub.UnsibscribeAll();
         }

@@ -6,6 +6,13 @@ namespace NubEval
 {
     public class NetworkEventsHandler : INetworkEventHandler
     {
+        private readonly string deviceID;
+
+        public NetworkEventsHandler(string deviceID)
+        {
+            this.deviceID = deviceID;
+        }
+
         void INetworkEventHandler.OnPnStatus(Pubnub pn, PNStatus status)
         {
             string msg = status.Category == PNStatusCategory.PNConnectedCategory ? "Connected" : "Not connected";
@@ -15,7 +22,7 @@ namespace NubEval
 
         void INetworkEventHandler.OnPnMessage(Pubnub pn, PNMessageResult<object> result)
         {
-            Debug.Log($"Message received: ch={result.Channel} | {result.Message} | {result.Publisher} | {result.Timetoken}");
+            Debug.Log($"Message received: [{deviceID}] ch={result.Channel} | {result.Message} | {result.Publisher} | {result.Timetoken}");
         }
 
         void INetworkEventHandler.OnPnMessageAction(Pubnub pn, PNMessageActionEventResult result)

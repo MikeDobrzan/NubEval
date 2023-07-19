@@ -8,17 +8,20 @@ namespace NubEval
     public class Bootloader : MonoBehaviour
     {
         [Header("Services")]
-        [SerializeField] private PNWrapper pnWrapper;
+        [SerializeField] private PNDevice pnWrapper;
+        [SerializeField] private PNDevice deviceB;
         [SerializeField] private AddUserController addUserUI;
         [SerializeField] private LobbyController lobby;
 
         private async void Start()
         {
             //Initialize PubNub
-            var pn = await pnWrapper.Init();
+            var devA = await pnWrapper.Init();
+            var devB = await deviceB.Init();
+
             Debug.Log("Boot Complete!");
             await Task.Delay(1000);
-            lobby.Construct(pn);
+            lobby.Construct(devA);
 
             List<Channel> channels = new List<Channel>
             {
@@ -26,10 +29,11 @@ namespace NubEval
                 new Channel(Channels.Lobby, ChannelType.PresenceChannel)
             };
 
-            pn.Subscriptions.SubscribeChannels(channels);
+            devA.Subscriptions.SubscribeChannels(channels);
+            devB.Subscriptions.SubscribeChannels(channels);
 
             await Task.Delay(500);
-            await pn.Presence.ChannelJoin(Channels.MainChannel, new PresenceState("lobbyState", "idle"));
+            await devA.Presence.ChannelJoin(Channels.MainChannel, new PresenceState("lobbyState", "idle"));
             await Task.Delay(1000);
 
 

@@ -1,22 +1,16 @@
 using NubEval.Game.Networking.Data;
-using NubEval.Networking;
 using PubnubApi;
 using System.Threading.Tasks;
 
 namespace NubEval.Networking.PubNubWrapper
 {
-    public class PNPublish
+    public class PNPublish : PNServiceBase
     {
-        private Pubnub _pubnub;
-
-        public PNPublish(Pubnub pn)
-        {
-            _pubnub = pn;
-        }
+        public PNPublish(Pubnub pubnub) : base(pubnub) { }
 
         public async Task<(bool, MessageID)> SendMsg(string msg, string channel)
         {
-            var response = await _pubnub.Publish().Channel(channel).Message(msg).ExecuteAsync();
+            var response = await Pubnub.Publish().Channel(channel).Message(msg).ExecuteAsync();
             var timeToken = response.Result.Timetoken;
 
             if (response.Status != null || response.Status.Error)
@@ -27,7 +21,7 @@ namespace NubEval.Networking.PubNubWrapper
 
         public async Task<(bool, MessageID)> SendMsg(INetworkDataObject obj, string channel)
         {
-            var response = await _pubnub.Publish().Channel(channel).Message(obj).ExecuteAsync();
+            var response = await Pubnub.Publish().Channel(channel).Message(obj).ExecuteAsync();
             var timeToken = response.Result.Timetoken;
 
             if (response.Status != null || response.Status.Error)

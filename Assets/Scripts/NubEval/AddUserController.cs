@@ -8,9 +8,9 @@ namespace NubEval
     {
         [SerializeField] private UserAccountData _accountData;
 
-        private PNWrapper _pn;
+        private PNDevice _pn;
 
-        public void Cosntruct(PNWrapper pubnub)
+        public void Cosntruct(PNDevice pubnub)
         {
             _pn = pubnub;
         }

@@ -5,7 +5,7 @@ namespace NubEval
 {
     public class AppDashboard : MonoBehaviour
     {
-        [SerializeField] private PNWrapper pl;
+        [SerializeField] private PNDevice pl;
 
         public Pubnub Pubnub => pl.Pubnub;
 

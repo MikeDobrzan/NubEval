@@ -8,6 +8,7 @@ namespace NubEval
         [SerializeField] private string gameAccountId; //pubnub id
         [SerializeField] private string pubnubUserId; //pubnub id
         [SerializeField] private string displayName;
+        //[SerializeField] private string deviceID;
 
         public UserAccountData(string gameAccountId, string pubnubUserId, string displayName)
         {

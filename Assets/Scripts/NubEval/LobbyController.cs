@@ -8,10 +8,10 @@ namespace NubEval
     public class LobbyController : MonoBehaviour
     {
         [SerializeField] private LobbyPanel uiFriendList;
-        [SerializeField] private PNWrapper _pubnub;
+        [SerializeField] private PNDevice _pubnub;
 
 
-        public void Construct(PNWrapper pn)
+        public void Construct(PNDevice pn)
         {
             _pubnub = pn;
         }
