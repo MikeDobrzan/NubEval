@@ -153,11 +153,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   configAsset: {fileID: 11400000, guid: aa2a3bd5b3dcb3844902d97f06fb8ab6, type: 2}
-  deviceID: dev-pc-001
-  account:
-    gameAccountId: 
-    pubnubUserId: c11e1ee7-a70e-4672-8132-8675edbdae83
-    displayName: Rado-PC
+  playerPrefs: {fileID: 11400000, guid: d46d8c1a2044bf0429050d674fcace85, type: 2}
 --- !u!4 &20800199
 Transform:
   m_ObjectHideFlags: 0
@@ -1858,11 +1854,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   configAsset: {fileID: 11400000, guid: aa2a3bd5b3dcb3844902d97f06fb8ab6, type: 2}
-  deviceID: dev-mobile-001
-  account:
-    gameAccountId: 
-    pubnubUserId: c11e1ee7-a70e-4672-8132-8675edbdae83
-    displayName: Rad-Mobile
+  playerPrefs: {fileID: 11400000, guid: 6ffb11ab14b9d48488697bd3d04dda64, type: 2}
 --- !u!4 &795705175
 Transform:
   m_ObjectHideFlags: 0

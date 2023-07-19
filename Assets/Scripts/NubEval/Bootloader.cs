@@ -16,8 +16,8 @@ namespace NubEval
         private async void Start()
         {
             //Initialize PubNub
-            var devA = await pnWrapper.Init();
-            var devB = await deviceB.Init();
+            var devA = await pnWrapper.Connect();
+            var devB = await deviceB.Connect();
 
             Debug.Log("Boot Complete!");
             await Task.Delay(1000);

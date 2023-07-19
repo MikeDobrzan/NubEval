@@ -13,16 +13,12 @@ namespace NubEval.Networking.PubNubWrapper
         private bool _connected = false;
         private Pubnub _pubnub;
 
-        public PNConnection(UserAccountData account, PNConfigData config)
-        {
-            UserId userId = account.PubNubUserID;
+        public Pubnub PN => _pubnub;
 
+        public PNConnection(UserId userId, PNConfigData config)
+        {
             if (string.IsNullOrEmpty(userId))
-            {
                 Debug.LogError("Proivide userID!");
-                // It is recommended to change the UserId to a meaningful value, to be able to identify this client.
-                //userId = System.Guid.NewGuid().ToString();
-            }
 
             _userId = userId;
             _config = config;
@@ -88,6 +84,11 @@ namespace NubEval.Networking.PubNubWrapper
                 _connected = false;
                 Debug.LogWarning("PN Connect failed");
             }
+        }
+
+        public void Disconnect()
+        {
+            _pubnub.UnsibscribeAll();
         }
     }
 }

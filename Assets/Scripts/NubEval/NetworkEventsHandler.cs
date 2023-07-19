@@ -6,11 +6,11 @@ namespace NubEval
 {
     public class NetworkEventsHandler : INetworkEventHandler
     {
-        private readonly string deviceID;
+        private readonly UserDeviceData _deviceData;
 
-        public NetworkEventsHandler(string deviceID)
+        public NetworkEventsHandler(UserDeviceData device)
         {
-            this.deviceID = deviceID;
+            _deviceData = device;
         }
 
         void INetworkEventHandler.OnPnStatus(Pubnub pn, PNStatus status)
@@ -22,7 +22,7 @@ namespace NubEval
 
         void INetworkEventHandler.OnPnMessage(Pubnub pn, PNMessageResult<object> result)
         {
-            Debug.Log($"Message received: [{deviceID}] ch={result.Channel} | {result.Message} | {result.Publisher} | {result.Timetoken}");
+            Debug.Log($"Message received: {_deviceData} ch={result.Channel} | {result.Message} | {result.Publisher} | {result.Timetoken}");
         }
 
         void INetworkEventHandler.OnPnMessageAction(Pubnub pn, PNMessageActionEventResult result)

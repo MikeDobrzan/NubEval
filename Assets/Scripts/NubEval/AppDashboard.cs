@@ -7,7 +7,7 @@ namespace NubEval
     {
         [SerializeField] private PNDevice pl;
 
-        public Pubnub Pubnub => pl.Pubnub;
+        public Pubnub Pubnub => pl.Connection.PN;
 
         public async void AddSystemChannels()
         {
