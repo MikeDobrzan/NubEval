@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2539eb0fc35935d48b659cfc6ef0086b, type: 3}
-  m_Name: debug-PlayerPefs-Mobile
+  m_Name: debug-UserB-PlayerPefs-PC
   m_EditorClassIdentifier: 
-  pnUserID: c11e1ee7-a70e-4672-8132-8675edbdae83
+  pnUserID: 4567-new-guid-some-user
   deviceData:
-    deviceID: rado-android
+    deviceID: Michal-PC
     deviceType: 1

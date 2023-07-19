@@ -17,10 +17,10 @@ namespace NubEval
         private UserId CurrentUser => _pn.GetCurrentUserId();
 
 
-        public async Task<Dictionary<UserId, ConnectedUser>> GetUsersInChannel(string channel)
+        public async Task<Dictionary<UserId, ConnectedUser>> GetUsersInChannel(Channel channel)
         {
             var response = await _pn.HereNow()
-                .Channels(new[] { channel })
+                .Channels(new[] { channel.PubNubAddress })
                 .IncludeState(true)
                 .IncludeUUIDs(true)
                 .ExecuteAsync();
@@ -114,24 +114,31 @@ namespace NubEval
         }
 
 
-        public async Task ChannelJoin(string channel, PresenceState state = default)
+        public async Task ChannelJoin(Channel channel, PresenceState state = default)
         {
+            if (channel.ChannelType != ChannelType.PresenceChannel)
+            {
+                Debug.LogError("Can't join channels without presence");
+                return;
+            }
+
             var newState = new Dictionary<string, object>
             {
                 { state.StateType, state.State }
             };
 
             var responce = await _pn.SetPresenceState()
-                .Channels(new string[] { channel })
+                .Uuid(_pn.GetCurrentUserId())
+                .Channels(new string[] { channel.PubNubAddress })
                 .State(newState)
                 .ExecuteAsync();
 
             if (responce.Status.Error)
-                Debug.Log(responce.Status.ErrorData.Information);
+                Debug.LogWarning(responce.Status.ErrorData.Information);
             else
             {
                 responce.Result.State.TryGetValue(state.StateType, out object obj);
-                Debug.Log($"<{state.StateType}> set to: {obj}");
+                //Debug.Log($"<{state.StateType}> set to: {obj}");
             }
         }
     }

@@ -7,44 +7,46 @@ namespace NubEval
 {
     public class Bootloader : MonoBehaviour
     {
+        [SerializeField] private PNConfigDataAsset configAsset;
+
         [Header("Services")]
-        [SerializeField] private PNDevice pnWrapper;
-        [SerializeField] private PNDevice deviceB;
-        [SerializeField] private AddUserController addUserUI;
+        [SerializeField] private PNDevice aDevA;
+        [SerializeField] private PNDevice aDevB;
+        [SerializeField] private PNDevice bDevA;
+        [SerializeField] private UserManagementInput addUserUI;
         [SerializeField] private LobbyController lobby;
 
         private async void Start()
         {
             //Initialize PubNub
-            var devA = await pnWrapper.Connect();
-            var devB = await deviceB.Connect();
+            await aDevA.Connect(configAsset.Data);
+            await aDevB.Connect(configAsset.Data);           
+            await bDevA.Connect(configAsset.Data);
 
-            Debug.Log("Boot Complete!");
-            await Task.Delay(1000);
-            lobby.Construct(devA);
-
+            lobby.Construct(aDevA);
+            addUserUI.Cosntruct(aDevA);          
+            
             List<Channel> channels = new List<Channel>
             {
-                new Channel(Channels.MainChannel, ChannelType.PresenceChannel),
-                new Channel(Channels.Lobby, ChannelType.PresenceChannel)
+                Channels.MainChannel,
+                //new Channel(Channels.Lobby, ChannelType.PresenceChannel)
             };
 
-            devA.Subscriptions.SubscribeChannels(channels);
-            devB.Subscriptions.SubscribeChannels(channels);
+            aDevA.Subscriptions.SubscribeChannels(channels);
+            aDevB.Subscriptions.SubscribeChannels(channels);
+            bDevA.Subscriptions.SubscribeChannels(channels);
+            await Task.Delay(3000);
 
-            await Task.Delay(500);
-            await devA.Presence.ChannelJoin(Channels.MainChannel, new PresenceState("lobbyState", "idle"));
-            await Task.Delay(1000);
+            Debug.Log("Boot Complete!");
 
+            await aDevA.Presence.ChannelJoin(Channels.MainChannel, new PresenceState("lobbyState", "In Game"));
+            await bDevA.Presence.ChannelJoin(Channels.MainChannel, new PresenceState("lobbyState", "ffffuuuuuuuuuu"));
 
-            var state = await pnWrapper.Presence.GetStatesCurrentUser(Channels.MainChannel);
-            Debug.Log(state[0].State);
-
+            await Task.Delay(3000);
+            //var state = await aDevA.Presence.GetStatesCurrentUser(Channels.MainChannel);
             // Publish example
-            (bool, MessageID) bla = await pnWrapper.MessageDispatcher.SendMsg("Hello World from Unity!", Channels.MainChannel);
-            (bool, MessageID) resp = await pnWrapper.MessageDispatcher.SendMsg("Join!", Channels.Lobby);
-
-            addUserUI.Cosntruct(pnWrapper);
+            //(bool, MessageID) bla = await aDevA.MessageDispatcher.SendMsg("Hello World from Unity!", Channels.MainChannel);
+            //(bool, MessageID) resp = await aDevA.MessageDispatcher.SendMsg("Join!", Channels.Lobby);
 
             lobby.OnBoot();
         }

@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace NubEval
 {
-    public class AddUserController : MonoBehaviour
+    public class UserManagementInput : MonoBehaviour
     {
         [SerializeField] private UserAccountData _accountData;
 
@@ -17,6 +17,9 @@ namespace NubEval
 
         public async void OnBtnClickAddUser()
         {
+            if (string.IsNullOrEmpty(_accountData.PubNubUserID))
+                return;
+
             bool success = await _pn.DataUsers.SetUserData(_accountData);           
             Debug.Log($"Modified: {success}");
         }

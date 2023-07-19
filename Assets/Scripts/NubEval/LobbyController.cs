@@ -35,7 +35,7 @@ namespace NubEval
                 else
                     accountData = metaData.Item2;
 
-                Debug.Log($"in lobby user={user.ID} | ({user.PresenceStates[0].StateType}-{user.PresenceStates[0].State}) | ({accountData.DisplayName})");
+                //Debug.Log($"in lobby user={user.ID} | ({user.PresenceStates[0].StateType}-{user.PresenceStates[0].State}) | ({accountData.DisplayName})");
 
                 uiItems.Add(new LobbyUserItemData(accountData, user.PresenceStates));
             }

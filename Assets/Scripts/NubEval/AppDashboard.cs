@@ -9,25 +9,25 @@ namespace NubEval
 
         public Pubnub Pubnub => pl.Connection.PN;
 
-        public async void AddSystemChannels()
-        {
-            var response = await Pubnub.SetChannelMetadata()
-                .Channel(Channels.Lobby)
-                .Name("server-lobby-matches")
-                .ExecuteAsync();
+        //public async void AddSystemChannels()
+        //{
+        //    var response = await Pubnub.SetChannelMetadata()
+        //        .Channel(Channels.Lobby)
+        //        .Name("server-lobby-matches")
+        //        .ExecuteAsync();
 
-            if (response != null)
-            {
-                bool success = !response.Status.Error;
+        //    if (response != null)
+        //    {
+        //        bool success = !response.Status.Error;
 
-                Debug.Log($"Success: {success}");
+        //        Debug.Log($"Success: {success}");
 
-                if(!success)
-                {
-                    Debug.LogWarning($"{response.Status.ErrorData.Information}");
-                }
-            }
-        }
+        //        if(!success)
+        //        {
+        //            Debug.LogWarning($"{response.Status.ErrorData.Information}");
+        //        }
+        //    }
+        //}
 
         public async void GetAppChannels()
         {

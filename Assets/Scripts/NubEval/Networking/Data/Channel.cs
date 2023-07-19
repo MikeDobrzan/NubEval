@@ -1,9 +1,12 @@
+using UnityEngine;
+
 namespace NubEval
 {
+    [System.Serializable]
     public struct Channel
     {
-        private string _pnId;
-        private ChannelType _channelType;
+        [SerializeField] private string _pnId;
+        [SerializeField] private ChannelType _channelType;
 
         public Channel(string pnId, ChannelType channelType)
         {
@@ -12,6 +15,7 @@ namespace NubEval
         }
 
         public string PubNubAddress => _pnId;
+        public string PresenceAddress => _pnId + "-pnpres";
         public ChannelType ChannelType => _channelType;
     }
 

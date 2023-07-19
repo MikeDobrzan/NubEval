@@ -12,7 +12,7 @@ namespace NubEval
     /// </summary>
     public class PNDevice : MonoBehaviour
     {
-        [SerializeField] private PNConfigDataAsset configAsset;
+        //[SerializeField] private PNConfigDataAsset configAsset;
         [SerializeField] private PlayerPrefsAsset playerPrefs;
 
         private SubscribeCallbackListener _listener;
@@ -29,10 +29,12 @@ namespace NubEval
         public PNPresence Presence => _presence;
         public PNSubscribe Subscriptions => _subscribe;
 
-        public async Task<PNDevice> Connect()
+        public async Task<PNDevice> Connect(PNConfigData config)
         {
+            Debug.LogWarning($"Try to connect: {playerPrefs.PnUserID}");
+
             _listener = new SubscribeCallbackListener();
-            _connection = new PNConnection(playerPrefs.PnUserID, configAsset.Data);
+            _connection = new PNConnection(playerPrefs.PnUserID, config);
 
             var cts = new CancellationTokenSource(5000); //If not connected after 5sec;
             var pubnub = await _connection.SetListener(_listener, cts.Token);

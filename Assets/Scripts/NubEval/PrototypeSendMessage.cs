@@ -10,7 +10,7 @@ namespace NubEval
         [SerializeField] private PNDevice pn;
 
         [SerializeField] private string message;
-        [SerializeField] private string channel;
+        [SerializeField] private Channel channel;
         [SerializeField] private Match testMatch;
         [SerializeField] private PNConfigAsset config;
         [SerializeField] private MessageID lastMsg;
@@ -30,7 +30,7 @@ namespace NubEval
             await SendMsg(message, channel);
         }
 
-        private async Task SendMsg(string message, string channel)
+        private async Task SendMsg(string message, Channel channel)
         {
             (bool, MessageID) msg = await pn.MessageDispatcher.SendMsg(message, channel);
 

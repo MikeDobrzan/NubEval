@@ -15,19 +15,19 @@ namespace NubEval
 
         void INetworkEventHandler.OnPnStatus(Pubnub pn, PNStatus status)
         {
-            string msg = status.Category == PNStatusCategory.PNConnectedCategory ? "Connected" : "Not connected";
+            string msg =  status.Category == PNStatusCategory.PNConnectedCategory ? "Connected" : "Not connected";
 
-            Debug.Log(msg);
+            Debug.Log($"{_deviceData}[Status] {msg}");
         }
 
         void INetworkEventHandler.OnPnMessage(Pubnub pn, PNMessageResult<object> result)
         {
-            Debug.Log($"Message received: {_deviceData} ch={result.Channel} | {result.Message} | {result.Publisher} | {result.Timetoken}");
+            Debug.Log($"{_deviceData}[MSG] ch={result.Channel} | {result.Message} | {result.Publisher} | {result.Timetoken}");
         }
 
         void INetworkEventHandler.OnPnMessageAction(Pubnub pn, PNMessageActionEventResult result)
         {
-            Debug.Log(result.Channel);
+            Debug.Log($"{_deviceData}[MSGAction] {result.Channel}");
         }
 
         void INetworkEventHandler.OnPnSignal(Pubnub pn, PNSignalResult<object> result)
@@ -47,7 +47,7 @@ namespace NubEval
 
         void INetworkEventHandler.OnPnPresence(Pubnub pn, PNPresenceEventResult result)
         {
-            Debug.Log(result.Event);
+            Debug.Log($"{_deviceData}[Presence] {result.Uuid} <{result.Event}> ch={result.Channel}");
         }
     }
 }
