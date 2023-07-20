@@ -140,7 +140,7 @@ namespace NubEval
                 .WithPresence()
                 .Execute();
 
-            await Task.Delay(500); //Note: this is workaround because Subscribe is not Async
+            await Task.Delay(1000); //Note: this is workaround because Subscribe is not Async
 
             var responce = await _pn.SetPresenceState()
                 .Uuid(_pn.GetCurrentUserId())

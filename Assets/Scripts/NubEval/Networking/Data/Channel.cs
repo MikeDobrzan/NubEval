@@ -17,6 +17,11 @@ namespace NubEval
         public string PubNubAddress => _pnId;
         public string PresenceAddress => _pnId + "-pnpres";
         public ChannelType ChannelType => _channelType;
+
+        public bool AddressMatch(string str)
+        {
+            return string.Equals(_pnId, str);
+        }
     }
 
     public enum ChannelType

@@ -62,7 +62,7 @@ namespace NubEval.Networking.PubNubWrapper
             if (_connected) { return true; }
 
             _pubnub.Subscribe<string>()
-                .Channels(new[] { "connected" })
+                .Channels(new[] { Channels.Connection.PubNubAddress })
                 .WithPresence()
                 .Execute();
 
@@ -96,7 +96,7 @@ namespace NubEval.Networking.PubNubWrapper
         private void OnPnStatus(Pubnub pn, PNStatus status)
         {
             if (status.Category != PNStatusCategory.PNConnectedCategory) { }
-            else if (string.Equals(status.AffectedChannels[0], "connected"))
+            else if (Channels.Connection.AddressMatch(status.AffectedChannels[0]))
             {
                 _connected = true;
             }

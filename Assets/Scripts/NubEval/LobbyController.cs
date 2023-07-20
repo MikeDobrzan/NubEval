@@ -44,7 +44,12 @@ namespace NubEval
             uiFriendList.Refresh(uiItems);
         }
 
-        void ILobbyEventsHandler.OnUserJoined(UserId user, UserAccountData accountData)
+        void ILobbyEventsHandler.OnUserLeave(UserId user, UserAccountData accountData)
+        {
+            Debug.Log($"{user} Left!");
+        }
+
+        void ILobbyEventsHandler.OnUserJoin(UserId user, UserAccountData accountData)
         {
             Debug.Log($"{accountData.DisplayName} Joined!");
         }

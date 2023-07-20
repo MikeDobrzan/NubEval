@@ -22,19 +22,16 @@ namespace NubEval
 
         private async void Start()
         {
-
-            return;
-            //Initialize PubNub
-            devA = new PNDevice(configAsset.Data, DevAPlayerPrefs.PnUserID, DevAPlayerPrefs.DeviceData);
-            //devB = new PNDevice(configAsset.Data, DevBPlayerPrefs.PnUserID, DevBPlayerPrefs.DeviceData);
-
             var cts = new CancellationTokenSource(5000); //If not connected after 5sec;
 
+            //Initialize PubNub
+            devA = new PNDevice(configAsset.Data, DevAPlayerPrefs.PnUserID, DevAPlayerPrefs.DeviceData);
             await devA.Connection.Connect(cts.Token);
-            //await devB.Connection.Connect(cts.Token);           
 
-            //lobby.Construct(devA);
-            //addUserUI.Cosntruct(devA);          
+            JoinLobby();
+
+            lobby.Construct(devA);
+            addUserUI.Cosntruct(devA);          
             
             //List<Channel> channels = new List<Channel>
             //{
@@ -50,7 +47,7 @@ namespace NubEval
             ////await devA.Presence.SetPresenceState(Channels.MainChannel, new PresenceState("lobbyState", "In Lobby"));
             ////await devB.Presence.SetPresenceState(Channels.MainChannel, new PresenceState("lobbyState", "In Lobby"));                       
 
-            //Debug.Log("Boot Complete!");
+            Debug.Log("Boot Complete!");
 
             //await Task.Delay(3000);
             ////var state = await aDevA.Presence.GetStatesCurrentUser(Channels.MainChannel);
@@ -58,12 +55,15 @@ namespace NubEval
             ////(bool, MessageID) bla = await aDevA.MessageDispatcher.SendMsg("Hello World from Unity!", Channels.MainChannel);
             ////(bool, MessageID) resp = await aDevA.MessageDispatcher.SendMsg("Join!", Channels.Lobby);
 
-            //devA.RemoteEventsLobby.SubscribeLobbyEvents(lobby);
-
-            //lobby.OnBoot();
+            lobby.OnBoot();
             //somethign
         }
 
+        private async void JoinLobby()
+        {
+            await devA.Presence.SetPresenceState(Channels.DebugChannel, new PresenceState("lobbyState", "In Lobby"));
+            devA.RemoteEventsLobby.SubscribeLobbyEvents(lobby);
+        }
 
         //Currently gets all users present in the Lobby channel
         private void GetFriends()

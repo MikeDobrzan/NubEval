@@ -14,6 +14,10 @@ namespace NubEval
         private readonly UserDeviceData _deviceData;
         private readonly List<ILobbyEventsHandler> _lobbyEventsSubscribers;
 
+        private const string EVENT_JOIN = "join";
+        private const string EVENT_LEAVE = "leave";
+        private const string EVENT_CHANGE_STATE = "state-change";
+
         public NetworkEventsHandler(PNDevice pubnub, UserDeviceData device)
         {
             _lobbyEventsSubscribers = new List<ILobbyEventsHandler>();
@@ -26,17 +30,19 @@ namespace NubEval
             if (!_lobbyEventsSubscribers.Contains(subscriber))
                 _lobbyEventsSubscribers.Add(subscriber);
 
-            Debug.LogWarning($"{_deviceData} subs: {_lobbyEventsSubscribers.Count}");
+            Debug.Log($"{_deviceData} subs: {_lobbyEventsSubscribers.Count}");
         }
 
         void INetworkEventHandler.OnPnStatus(Pubnub pn, PNStatus status)
         {
             if (status.Operation == PNOperationType.PNSubscribeOperation)
             {
-              if
+                if (Channels.Connection.AddressMatch(status.AffectedChannels[0]))
+                {
+                    Debug.Log($"{_deviceData}[Status]<color=#00FF00> Initial Connection complete</color>");
+                    return;
+                }
             }
-
-
 
             Debug.Log($"{_deviceData}[{status.Operation}]");
         }
@@ -72,9 +78,11 @@ namespace NubEval
 
             if (result.Channel != null)
             {
+                UserId user = result.Uuid;
+
                 if (result.Channel == Channels.DebugChannel.PubNubAddress)
                 {
-                    UserId user = result.Uuid;
+
                     UserAccountData userAccountData;
 
                     var response = await _pubnub.UserData.GetAccountDataAsync(user);
@@ -83,9 +91,20 @@ namespace NubEval
                     {
                         userAccountData = response.Item2;
 
-                        foreach (var sub in _lobbyEventsSubscribers)
+                        if (string.Equals(result.Event, EVENT_JOIN))
                         {
-                            sub.OnUserJoined(user, userAccountData);
+                            foreach (var sub in _lobbyEventsSubscribers)
+                            {
+                                sub.OnUserJoin(user, userAccountData);
+                            }
+                        }
+
+                        if (string.Equals(result.Event, EVENT_LEAVE))
+                        {
+                            foreach (var sub in _lobbyEventsSubscribers)
+                            {
+                                sub.OnUserLeave(user, userAccountData);
+                            }
                         }
                     }
                 }
@@ -93,3 +112,4 @@ namespace NubEval
         }
     }
 }
+

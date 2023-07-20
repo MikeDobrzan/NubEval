@@ -34,8 +34,6 @@ namespace NubEval
 
         public PNDevice(PNConfigData config, UserId PnUserID, UserDeviceData deviceData)
         {
-            Debug.LogWarning($"Init: {PnUserID}");
-
             _listener = new SubscribeCallbackListener();
             _connection = new PNConnection(PnUserID, config, _listener, out Pubnub pubnub);
             _networkEventsHandler = new NetworkEventsHandler(this, deviceData);

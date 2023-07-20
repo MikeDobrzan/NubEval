@@ -4,6 +4,7 @@ namespace NubEval
 {
     public interface ILobbyEventsHandler
     {
-        void OnUserJoined(UserId user, UserAccountData accountData);
+        void OnUserJoin(UserId user, UserAccountData accountData);
+        void OnUserLeave(UserId user, UserAccountData accountData);
     }
 }
