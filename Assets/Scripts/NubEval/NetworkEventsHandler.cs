@@ -1,21 +1,33 @@
+using NubEval.Networking;
 using NubEval.Networking.PubNubWrapper;
 using PubnubApi;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace NubEval
 {
-    public class NetworkEventsHandler : INetworkEventHandler
+    public class NetworkEventsHandler :
+        INetworkEventHandler,
+        IRemoteLobbyEventsListener
     {
+        private readonly PNDevice _pubnub;
         private readonly UserDeviceData _deviceData;
+        private readonly List<ILobbyEventsHandler> lobbyEventsSubscribers = new List<ILobbyEventsHandler>();
 
-        public NetworkEventsHandler(UserDeviceData device)
+        public NetworkEventsHandler(PNDevice pubnub, UserDeviceData device)
         {
+            _pubnub = pubnub;
             _deviceData = device;
+        }
+
+        void IRemoteLobbyEventsListener.SubscribeLobbyEvents(ILobbyEventsHandler subscriber)
+        {
+            lobbyEventsSubscribers.Add(subscriber);
         }
 
         void INetworkEventHandler.OnPnStatus(Pubnub pn, PNStatus status)
         {
-            string msg =  status.Category == PNStatusCategory.PNConnectedCategory ? "Connected" : "Not connected";
+            string msg = status.Category == PNStatusCategory.PNConnectedCategory ? "Connected" : "Not connected";
 
             Debug.Log($"{_deviceData}[Status] {msg}");
         }
@@ -45,9 +57,34 @@ namespace NubEval
             Debug.Log(result.Channel);
         }
 
-        void INetworkEventHandler.OnPnPresence(Pubnub pn, PNPresenceEventResult result)
+        async void INetworkEventHandler.OnPnPresence(Pubnub pn, PNPresenceEventResult result)
         {
-            Debug.Log($"{_deviceData}[Presence] {result.Uuid} <{result.Event}> ch={result.Channel}");
+            //Debug.Log($"{_deviceData}[Presence] {result.Uuid} <{result.Event}> ch={result.Channel}");
+
+            if (result.Channel != null)
+            {
+                if (result.Channel == Channels.MainChannel.PubNubAddress)
+                {
+                    
+
+                    UserId user = result.Uuid;
+                    UserAccountData userAccountData;
+
+                    var response = await _pubnub.UserData.GetAccountDataAsync(user);
+
+                    if (response.Item1)
+                    {
+                        userAccountData = response.Item2;
+
+                        Debug.Log($"It's: {result.Channel} | {response.Item2.PubNubUserID}");
+
+                        foreach (var sub in lobbyEventsSubscribers)
+                        {
+                            sub.OnUserJoined(user, userAccountData);
+                        }
+                    }
+                }
+            }
         }
     }
 }

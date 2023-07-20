@@ -1,5 +1,5 @@
+using NubEval.Networking;
 using NubEval.Networking.PubNubWrapper;
-using PubnubApi;
 using PubnubApi.Unity;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,7 +12,6 @@ namespace NubEval
     /// </summary>
     public class PNDevice : MonoBehaviour
     {
-        //[SerializeField] private PNConfigDataAsset configAsset;
         [SerializeField] private PlayerPrefsAsset playerPrefs;
 
         private SubscribeCallbackListener _listener;
@@ -22,12 +21,14 @@ namespace NubEval
         private PNDatastoreUsers _dataUsers;
         private PNPresence _presence;
         private INetworkEventHandler _networkEventHandler;
+        private IRemoteLobbyEventsListener _remoteLobbyEventsListener;
 
         public PNConnection Connection => _connection;
-        public PNDatastoreUsers DataUsers => _dataUsers;
+        public PNDatastoreUsers UserData => _dataUsers;
         public PNPublish MessageDispatcher => _messages;
         public PNPresence Presence => _presence;
         public PNSubscribe Subscriptions => _subscribe;
+        public IRemoteLobbyEventsListener RemoteEventsLobby => _remoteLobbyEventsListener;
 
         public async Task<PNDevice> Connect(PNConfigData config)
         {
@@ -39,7 +40,10 @@ namespace NubEval
             var cts = new CancellationTokenSource(5000); //If not connected after 5sec;
             var pubnub = await _connection.SetListener(_listener, cts.Token);
 
-            _networkEventHandler = new NetworkEventsHandler(playerPrefs.DeviceData);
+            var networkListener = new NetworkEventsHandler(this, playerPrefs.DeviceData);
+            _networkEventHandler = networkListener;
+            _remoteLobbyEventsListener = networkListener;
+
             _subscribe = new PNSubscribe(pubnub);
             _messages = new PNPublish(pubnub);
             _presence = new PNPresence(pubnub);

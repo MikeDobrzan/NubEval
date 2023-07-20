@@ -401,7 +401,7 @@ MonoBehaviour:
   message: '"Ding!"'
   channel:
     _pnId: Channel-Barcelona
-    _channelType: 0
+    _channelType: 1
   testMatch:
     MatchID: 0
     MatchStatus: 0
@@ -2381,7 +2381,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   uiFriendList: {fileID: 304437362}
-  _pubnub: {fileID: 0}
+  _remote: {fileID: 0}
 --- !u!1 &1771124903
 GameObject:
   m_ObjectHideFlags: 0
@@ -2807,15 +2807,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9155054972348134411, guid: a302a7d1c1fd3184b9f57807f7b354c4, type: 3}
       propertyPath: _accountData.displayName
-      value: Teemo
+      value: Jack
       objectReference: {fileID: 0}
     - target: {fileID: 9155054972348134411, guid: a302a7d1c1fd3184b9f57807f7b354c4, type: 3}
       propertyPath: _accountData.pubnubUserId
-      value: 4567-new-guid-some-user
+      value: Jack-device
       objectReference: {fileID: 0}
     - target: {fileID: 9155054972348134411, guid: a302a7d1c1fd3184b9f57807f7b354c4, type: 3}
       propertyPath: _accountData.gameAccountId
-      value: kitty1241@game.com
+      value: theone@game.com
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

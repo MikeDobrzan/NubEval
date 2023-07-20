@@ -10,6 +10,6 @@ namespace NubEval.Networking.PubNubWrapper
         void OnPnSignal(Pubnub pn, PNSignalResult<object> result);
         void OnPnObject(Pubnub pn, PNObjectEventResult result);
         void OnPnFile(Pubnub pn, PNFileEventResult result);
-        void OnPnPresence(Pubnub pn, PNPresenceEventResult result);
+        void OnPnPresence(Pubnub pn, PNPresenceEventResult result);        
     }
 }

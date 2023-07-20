@@ -1,6 +1,7 @@
 using PubnubApi;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace NubEval.Networking.PubNubWrapper
 {
@@ -33,7 +34,7 @@ namespace NubEval.Networking.PubNubWrapper
             return users;
         }
 
-        public async Task<(bool, UserAccountData)> GetAccountData(UserId user)
+        public async Task<(bool, UserAccountData)> GetAccountDataAsync(UserId user)
         {
             var response = await _pn.GetUuidMetadata()
                 .Uuid(user)
@@ -54,7 +55,10 @@ namespace NubEval.Networking.PubNubWrapper
                 }
             }
             else
+            {
+                Debug.LogWarning($"No account data: {user}");
                 return (false, default);
+            }
         }
 
         public async Task<int> GetCountUsers()
