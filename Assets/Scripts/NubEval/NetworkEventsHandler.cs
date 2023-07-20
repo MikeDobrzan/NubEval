@@ -31,9 +31,14 @@ namespace NubEval
 
         void INetworkEventHandler.OnPnStatus(Pubnub pn, PNStatus status)
         {
-            string msg = status.Category == PNStatusCategory.PNConnectedCategory ? "Connected" : "Not connected";
+            if (status.Operation == PNOperationType.PNSubscribeOperation)
+            {
+              if
+            }
 
-            Debug.Log($"{_deviceData}[Status] {msg}");
+
+
+            Debug.Log($"{_deviceData}[{status.Operation}]");
         }
 
         void INetworkEventHandler.OnPnMessage(Pubnub pn, PNMessageResult<object> result)
@@ -63,11 +68,11 @@ namespace NubEval
 
         async void INetworkEventHandler.OnPnPresence(Pubnub pn, PNPresenceEventResult result)
         {
-            Debug.Log($"{_deviceData}[Presence] {result.Uuid} <{result.Event}> ch={result.Channel} (Subs:{_lobbyEventsSubscribers.Count})");
+            //Debug.Log($"{_deviceData}[Presence] {result.Uuid} <{result.Event}> ch={result.Channel} (Subs:{_lobbyEventsSubscribers.Count})");
 
             if (result.Channel != null)
             {
-                if (result.Channel == Channels.MainChannel.PubNubAddress)
+                if (result.Channel == Channels.DebugChannel.PubNubAddress)
                 {
                     UserId user = result.Uuid;
                     UserAccountData userAccountData;

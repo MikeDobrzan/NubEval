@@ -20,7 +20,7 @@ namespace NubEval
         public async void OnBoot()
         {
             //get all users in the lobby channel
-            var users = await _remote.Presence.GetUsersInChannel(Channels.MainChannel);
+            var users = await _remote.Presence.GetUsersInChannel(Channels.DebugChannel);
 
             List<LobbyUserItemData> uiItems = new List<LobbyUserItemData>();
 

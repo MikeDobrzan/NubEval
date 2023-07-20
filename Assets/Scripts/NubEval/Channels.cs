@@ -6,8 +6,10 @@ namespace NubEval
 {
     public static class Channels
     {
-        public static Channel MainChannel = new Channel("Channel-Barcelona", ChannelType.PresenceChannel);
-        //public static string Lobby = "app-lobby";
+        public static Channel Connection = new Channel("connection", ChannelType.PublishOnlyChannel);
+        public static Channel DebugChannel = new Channel("Channel-Barcelona", ChannelType.PresenceChannel);
+        
+        //public static string Lobby = "friends";
         //public static string LobbyMatches = "app-channel-lobby";
     }
 }

@@ -17,7 +17,7 @@ namespace NubEval
 
         public async void SendNetworkObject()
         {
-            (bool, MessageID) msg = await pn.MessageDispatcher.SendMsg(testMatch, Channels.MainChannel);
+            (bool, MessageID) msg = await pn.MessageDispatcher.SendMsg(testMatch, Channels.DebugChannel);
 
             if (msg.Item1 == false)
                 return;
