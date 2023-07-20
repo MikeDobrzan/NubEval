@@ -2,6 +2,9 @@ using UnityEngine;
 
 namespace NubEval
 {
+    /// <summary>
+    /// PubNub API config data
+    /// </summary>
     [System.Serializable]
     public struct PNConfigData
     {

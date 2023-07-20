@@ -12,17 +12,21 @@ namespace NubEval
     {
         private readonly PNDevice _pubnub;
         private readonly UserDeviceData _deviceData;
-        private readonly List<ILobbyEventsHandler> lobbyEventsSubscribers = new List<ILobbyEventsHandler>();
+        private readonly List<ILobbyEventsHandler> _lobbyEventsSubscribers;
 
         public NetworkEventsHandler(PNDevice pubnub, UserDeviceData device)
         {
+            _lobbyEventsSubscribers = new List<ILobbyEventsHandler>();
             _pubnub = pubnub;
             _deviceData = device;
         }
 
         void IRemoteLobbyEventsListener.SubscribeLobbyEvents(ILobbyEventsHandler subscriber)
         {
-            lobbyEventsSubscribers.Add(subscriber);
+            if (!_lobbyEventsSubscribers.Contains(subscriber))
+                _lobbyEventsSubscribers.Add(subscriber);
+
+            Debug.LogWarning($"{_deviceData} subs: {_lobbyEventsSubscribers.Count}");
         }
 
         void INetworkEventHandler.OnPnStatus(Pubnub pn, PNStatus status)
@@ -59,14 +63,12 @@ namespace NubEval
 
         async void INetworkEventHandler.OnPnPresence(Pubnub pn, PNPresenceEventResult result)
         {
-            //Debug.Log($"{_deviceData}[Presence] {result.Uuid} <{result.Event}> ch={result.Channel}");
+            Debug.Log($"{_deviceData}[Presence] {result.Uuid} <{result.Event}> ch={result.Channel} (Subs:{_lobbyEventsSubscribers.Count})");
 
             if (result.Channel != null)
             {
                 if (result.Channel == Channels.MainChannel.PubNubAddress)
                 {
-                    
-
                     UserId user = result.Uuid;
                     UserAccountData userAccountData;
 
@@ -76,9 +78,7 @@ namespace NubEval
                     {
                         userAccountData = response.Item2;
 
-                        Debug.Log($"It's: {result.Channel} | {response.Item2.PubNubUserID}");
-
-                        foreach (var sub in lobbyEventsSubscribers)
+                        foreach (var sub in _lobbyEventsSubscribers)
                         {
                             sub.OnUserJoined(user, userAccountData);
                         }

@@ -1,8 +1,8 @@
 using NubEval.Networking;
 using NubEval.Networking.PubNubWrapper;
+using PubnubApi;
 using PubnubApi.Unity;
-using System.Threading;
-using System.Threading.Tasks;
+using System;
 using UnityEngine;
 
 namespace NubEval
@@ -10,9 +10,9 @@ namespace NubEval
     /// <summary>
     /// UserDevice
     /// </summary>
-    public class PNDevice : MonoBehaviour
+    public class PNDevice : IDisposable
     {
-        [SerializeField] private PlayerPrefsAsset playerPrefs;
+        //[SerializeField] private PlayerPrefsAsset playerPrefs;
 
         private SubscribeCallbackListener _listener;
         private PNPublish _messages;
@@ -30,19 +30,18 @@ namespace NubEval
         public PNSubscribe Subscriptions => _subscribe;
         public IRemoteLobbyEventsListener RemoteEventsLobby => _remoteLobbyEventsListener;
 
-        public async Task<PNDevice> Connect(PNConfigData config)
+        private readonly NetworkEventsHandler _networkEventsHandler;
+
+        public PNDevice(PNConfigData config, UserId PnUserID, UserDeviceData deviceData)
         {
-            Debug.LogWarning($"Try to connect: {playerPrefs.PnUserID}");
+            Debug.LogWarning($"Init: {PnUserID}");
 
             _listener = new SubscribeCallbackListener();
-            _connection = new PNConnection(playerPrefs.PnUserID, config);
+            _connection = new PNConnection(PnUserID, config, _listener, out Pubnub pubnub);
+            _networkEventsHandler = new NetworkEventsHandler(this, deviceData);
 
-            var cts = new CancellationTokenSource(5000); //If not connected after 5sec;
-            var pubnub = await _connection.SetListener(_listener, cts.Token);
-
-            var networkListener = new NetworkEventsHandler(this, playerPrefs.DeviceData);
-            _networkEventHandler = networkListener;
-            _remoteLobbyEventsListener = networkListener;
+            _networkEventHandler = _networkEventsHandler;
+            _remoteLobbyEventsListener = _networkEventsHandler;
 
             _subscribe = new PNSubscribe(pubnub);
             _messages = new PNPublish(pubnub);
@@ -57,11 +56,9 @@ namespace NubEval
             _listener.onObject += _networkEventHandler.OnPnObject;
             _listener.onSignal += _networkEventHandler.OnPnSignal;
             _listener.onMessageAction += _networkEventHandler.OnPnMessageAction;
-
-            return this;
         }
 
-        private void OnDestroy()
+        public void Dispose()
         {
             Connection.Disconnect();
         }

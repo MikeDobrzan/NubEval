@@ -9,7 +9,7 @@ namespace NubEval
         ILobbyEventsHandler
     {
         [SerializeField] private LobbyPanel uiFriendList;
-        [SerializeField] private PNDevice _remote;
+        private PNDevice _remote;
 
 
         public void Construct(PNDevice pn)
@@ -42,7 +42,6 @@ namespace NubEval
             }
 
             uiFriendList.Refresh(uiItems);
-            _remote.RemoteEventsLobby.SubscribeLobbyEvents(this);
         }
 
         void ILobbyEventsHandler.OnUserJoined(UserId user, UserAccountData accountData)

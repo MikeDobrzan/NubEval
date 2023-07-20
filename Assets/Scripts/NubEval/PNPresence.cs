@@ -114,7 +114,13 @@ namespace NubEval
         }
 
 
-        public async Task ChannelJoin(Channel channel, PresenceState state = default)
+        /// <summary>
+        /// Will automatically subscribe to it
+        /// </summary>
+        /// <param name="channel"></param>
+        /// <param name="state"></param>
+        /// <returns></returns>
+        public async Task SetPresenceState(Channel channel, PresenceState state = default)
         {
             if (channel.ChannelType != ChannelType.PresenceChannel)
             {
@@ -122,10 +128,19 @@ namespace NubEval
                 return;
             }
 
+            //Set state
             var newState = new Dictionary<string, object>
             {
                 { state.StateType, state.State }
             };
+
+            //Subscribe to the channel
+            _pn.Subscribe<string>()
+                .Channels(new[] { channel.PubNubAddress })
+                .WithPresence()
+                .Execute();
+
+            await Task.Delay(500); //Note: this is workaround because Subscribe is not Async
 
             var responce = await _pn.SetPresenceState()
                 .Uuid(_pn.GetCurrentUserId())
@@ -133,12 +148,19 @@ namespace NubEval
                 .State(newState)
                 .ExecuteAsync();
 
-            if (responce.Status.Error)
-                Debug.LogWarning(responce.Status.ErrorData.Information);
+            //debug
+            if (responce.Result == null)
+            {
+
+            }
+            else if (responce.Status.Error)
+            {
+                Debug.LogWarning(responce.Status.ErrorData.Information);               
+            }
             else
             {
                 responce.Result.State.TryGetValue(state.StateType, out object obj);
-                //Debug.Log($"<{state.StateType}> set to: {obj}");
+                Debug.Log($"<{state.StateType}> set to: {obj}");
             }
         }
     }

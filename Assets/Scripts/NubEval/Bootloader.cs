@@ -1,7 +1,9 @@
 using NubEval.Game.Networking.Data;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.tvOS;
 
 namespace NubEval
 {
@@ -10,45 +12,56 @@ namespace NubEval
         [SerializeField] private PNConfigDataAsset configAsset;
 
         [Header("Services")]
-        [SerializeField] private PNDevice aDevA;
-        [SerializeField] private PNDevice aDevB;
-        [SerializeField] private PNDevice bDevA;
+        [SerializeField] private PlayerPrefsAsset DevAPlayerPrefs;
+        [SerializeField] private PlayerPrefsAsset DevBPlayerPrefs;
         [SerializeField] private UserManagementInput addUserUI;
         [SerializeField] private LobbyController lobby;
 
+        private PNDevice devA;
+        private PNDevice devB;
+
         private async void Start()
         {
+
+            return;
             //Initialize PubNub
-            await aDevA.Connect(configAsset.Data);
-            await aDevB.Connect(configAsset.Data);           
-            await bDevA.Connect(configAsset.Data);
+            devA = new PNDevice(configAsset.Data, DevAPlayerPrefs.PnUserID, DevAPlayerPrefs.DeviceData);
+            //devB = new PNDevice(configAsset.Data, DevBPlayerPrefs.PnUserID, DevBPlayerPrefs.DeviceData);
 
-            lobby.Construct(aDevA);
-            addUserUI.Cosntruct(aDevA);          
+            var cts = new CancellationTokenSource(5000); //If not connected after 5sec;
+
+            await devA.Connection.Connect(cts.Token);
+            //await devB.Connection.Connect(cts.Token);           
+
+            //lobby.Construct(devA);
+            //addUserUI.Cosntruct(devA);          
             
-            List<Channel> channels = new List<Channel>
-            {
-                Channels.MainChannel,
-                //new Channel(Channels.Lobby, ChannelType.PresenceChannel)
-            };
+            //List<Channel> channels = new List<Channel>
+            //{
+            //    Channels.MainChannel,
+            //    //new Channel(Channels.Lobby, ChannelType.PresenceChannel)
+            //};
 
-            aDevA.Subscriptions.SubscribeChannels(channels);
-            aDevB.Subscriptions.SubscribeChannels(channels);
-            bDevA.Subscriptions.SubscribeChannels(channels);
-            await Task.Delay(3000);
+            //devA.Subscriptions.SubscribeChannels(channels);
+            //await Task.Delay(1000);
+            //devB.Subscriptions.SubscribeChannels(channels);
+            //await Task.Delay(1000);
 
-            Debug.Log("Boot Complete!");
+            ////await devA.Presence.SetPresenceState(Channels.MainChannel, new PresenceState("lobbyState", "In Lobby"));
+            ////await devB.Presence.SetPresenceState(Channels.MainChannel, new PresenceState("lobbyState", "In Lobby"));                       
 
-            await aDevA.Presence.ChannelJoin(Channels.MainChannel, new PresenceState("lobbyState", "In Game"));
-            await bDevA.Presence.ChannelJoin(Channels.MainChannel, new PresenceState("lobbyState", "ffffuuuuuuuuuu"));
+            //Debug.Log("Boot Complete!");
 
-            await Task.Delay(3000);
-            //var state = await aDevA.Presence.GetStatesCurrentUser(Channels.MainChannel);
-            // Publish example
-            //(bool, MessageID) bla = await aDevA.MessageDispatcher.SendMsg("Hello World from Unity!", Channels.MainChannel);
-            //(bool, MessageID) resp = await aDevA.MessageDispatcher.SendMsg("Join!", Channels.Lobby);
+            //await Task.Delay(3000);
+            ////var state = await aDevA.Presence.GetStatesCurrentUser(Channels.MainChannel);
+            //// Publish example
+            ////(bool, MessageID) bla = await aDevA.MessageDispatcher.SendMsg("Hello World from Unity!", Channels.MainChannel);
+            ////(bool, MessageID) resp = await aDevA.MessageDispatcher.SendMsg("Join!", Channels.Lobby);
 
-            lobby.OnBoot();
+            //devA.RemoteEventsLobby.SubscribeLobbyEvents(lobby);
+
+            //lobby.OnBoot();
+            //somethign
         }
 
 
@@ -56,6 +69,12 @@ namespace NubEval
         private void GetFriends()
         {
 
+        }
+
+        private void OnDestroy()
+        {
+            devA?.Dispose();
+            devB?.Dispose();
         }
     }
 }

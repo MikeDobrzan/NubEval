@@ -13,68 +13,86 @@ namespace NubEval.Networking.PubNubWrapper
         private bool _connected = false;
         private Pubnub _pubnub;
 
-        public Pubnub PN => _pubnub;
+        private bool _initialized;
 
-        public PNConnection(UserId userId, PNConfigData config)
+        public PNConnection(UserId userId, PNConfigData config, SubscribeCallbackListener listener, out Pubnub pubnubApi)
         {
             if (string.IsNullOrEmpty(userId))
                 Debug.LogError("Proivide userID!");
 
             _userId = userId;
             _config = config;
+
+            pubnubApi = InitializePubnubApi(listener);
         }
 
-        public UserId UserID => _userId;
+        //TODO: temp property, remove it when refactor app dashboard
+        public Pubnub PN => _pubnub;
 
-        //public async Task<Pubnub> Connect()
-        //{
-
-        //}
-
-        public async Task<Pubnub> SetListener(SubscribeCallbackListener listener, CancellationToken token)
+        private Pubnub InitializePubnubApi(SubscribeCallbackListener listener)
         {
-            SubscribeCallbackListener connectionListener = new SubscribeCallbackListener();
-
-            _pubnub = Initialize(_userId);
-            _pubnub.AddListener(connectionListener);
-            _pubnub.AddListener(listener);            
-            connectionListener.onStatus += OnPnStatus;
-
-            _pubnub.Subscribe<string>().Channels(new[] { "boot-connect" }).Execute();
-
-            while (!_connected)
+            if (_initialized)
             {
-                try
-                {
-                    token.ThrowIfCancellationRequested();
-                    await Task.Delay(100);
-                }
-                catch (System.Exception e)
-                {
-                    Debug.LogError("PN Connect timed out");
-                    _pubnub.RemoveListener(connectionListener);
-                    throw e;
-                }
+                Debug.LogError("Already Initialized! This should be called only once");
+                return null;
             }
 
-            _pubnub.RemoveListener(connectionListener);
-            return _pubnub;
-        }
-
-        private Pubnub Initialize(string userId)
-        {
-            UserId user = new UserId(userId);
+            UserId user = new UserId(_userId);
             PNConfiguration pnConfiguration = new PNConfiguration(user);
             pnConfiguration.SubscribeKey = _config.SubscribeKey;
             pnConfiguration.PublishKey = _config.PublishKey;
-            pnConfiguration.UserId = userId;
+            pnConfiguration.UserId = _userId;
 
-            var pubnub = new Pubnub(pnConfiguration);
-            return pubnub;
+            _pubnub = new Pubnub(pnConfiguration);
+            _pubnub.AddListener(listener);
+
+            _initialized = true;
+
+            return _pubnub;
         }
 
-        public void OnPnStatus(Pubnub pn, PNStatus status)
-        {           
+        public async Task<bool> Connect(CancellationToken token)
+        {
+            //SubscribeCallbackListener connectionListener = new SubscribeCallbackListener();
+
+            //_pubnub.AddListener(connectionListener);
+            //connectionListener.onStatus += OnPnStatus;
+
+            //We will just assume connection is made because Subscribe have neither a responce or Async Method
+            {
+                if (_connected) { return true; }
+                _pubnub.Subscribe<string>().Channels(new[] { "connected" }).Execute();
+                await Task.Delay(3000);
+                _connected = true;
+            }
+
+            //while (!_connected)
+            //{
+            //    try
+            //    {
+            //        token.ThrowIfCancellationRequested();
+            //        await Task.Delay(100);
+            //    }
+            //    catch (System.Exception e)
+            //    {
+            //        Debug.LogError($"PN Connect timed out: {e}");
+            //        _pubnub.RemoveListener(connectionListener);
+            //        return false;
+            //    }
+            //}
+
+            //_pubnub.RemoveListener(connectionListener);
+
+            return true;
+        }
+
+        public void Disconnect()
+        {
+            _pubnub.UnsibscribeAll();
+        }
+
+        private void OnPnStatus(Pubnub pn, PNStatus status)
+        {
             if (status.Category == PNStatusCategory.PNConnectedCategory)
             {
                 _connected = true;
@@ -84,11 +102,6 @@ namespace NubEval.Networking.PubNubWrapper
                 _connected = false;
                 Debug.LogWarning("PN Connect failed");
             }
-        }
-
-        public void Disconnect()
-        {
-            _pubnub.UnsibscribeAll();
         }
     }
 }
