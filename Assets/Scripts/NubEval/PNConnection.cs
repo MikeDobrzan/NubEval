@@ -10,7 +10,6 @@ namespace NubEval.Networking.PubNubWrapper
     {
         private readonly UserId _userId;
         private readonly PNConfigData _config;
-        private bool _connected = false;
         private Pubnub _pubnub;
 
         private bool _initialized;
@@ -87,7 +86,6 @@ namespace NubEval.Networking.PubNubWrapper
 
             //_pubnub.RemoveListener(connectionListener);
 
-            _connected = true;
 
             return true;
         }
@@ -95,22 +93,6 @@ namespace NubEval.Networking.PubNubWrapper
         public void Disconnect()
         {
             _pubnub.UnsibscribeAll();
-        }
-
-        private void OnPnStatus(Pubnub pn, PNStatus status)
-        {
-            if (status.Category == PNStatusCategory.PNConnectedCategory)
-            {
-                if (Channels.Connection.AddressMatch(status.AffectedChannels[0]))
-                {
-                    _connected = true;
-                }
-            }
-            else
-            {
-                _connected = false;
-                Debug.LogWarning("PN Connect failed");
-            }
         }
     }
 }

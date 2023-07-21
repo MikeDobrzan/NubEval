@@ -1264,6 +1264,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pnConfiguration: {fileID: 11400000, guid: 6f78ed64fd371fb4d990f33f93ed9b55, type: 2}
+  pnConfigDataAsset: {fileID: 11400000, guid: aa2a3bd5b3dcb3844902d97f06fb8ab6, type: 2}
   userId: testuser-002
 --- !u!4 &701359301
 Transform:
@@ -2909,6 +2910,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pnConfiguration: {fileID: 11400000, guid: 6f78ed64fd371fb4d990f33f93ed9b55, type: 2}
+  pnConfigDataAsset: {fileID: 11400000, guid: aa2a3bd5b3dcb3844902d97f06fb8ab6, type: 2}
   userId: testuser-001
 --- !u!4 &2046649195
 Transform:

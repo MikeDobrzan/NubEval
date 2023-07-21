@@ -1,123 +1,105 @@
-using NubEval.Networking.PubNubWrapper;
 using NubEval.Networking;
+using NubEval.Networking.PubNubWrapper;
 using PubnubApi;
 using PubnubApi.Unity;
-using System;
-using UnityEditor.VersionControl;
-using UnityEngine;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using UnityEngine;
 
 namespace NubEval
 {
     /// <summary>
     /// UserDevice
     /// </summary>
-    public class PNDevice : PNManagerBehaviour
+    public class PNDevice : MonoBehaviour
     {
-        // UserId identifies this client.
+        public PNConfigDataAsset pnConfigDataAsset;
         public string userId;
 
-        private UserDeviceData DeviceData => new UserDeviceData($"dev:{userId}", DeviceType.Mobile);
+        private Pubnub _pnApi;
+        private SubscribeCallbackListener _listener;
+        private PNPublish _messages;
+        private PNSubscribe _subscribe;       
+        private PNDatastoreUsers _dataUsers;
+        private PNPresence _presence;
+        private PNDeviceConsole _console;
+        private NetworkEventsHandler _networkEventsHandler;
+        private UserDeviceData _deviceData;
+        private PNConnection _connection;
 
-        private async void Awake()
-        {
-            ConstructPNDevice(default, userId, default);
-        }
-
-
-        private void OnPnPresence(Pubnub pn, PNPresenceEventResult result)
-        {
-            Console.Log($"PresenceEventReceived | Same API???={pubnub == pn}");
-        }
-
-        private void OnPnStatus(Pubnub pn, PNStatus status)
-        {
-            Debug.Log(status.Category == PNStatusCategory.PNConnectedCategory ? "Connected" : "Not connected");
-        }
-
-        public PNConnection Connection => null;
+        public SubscribeCallbackListener Listener => _listener;
+        private UserDeviceData DeviceData => _deviceData;        
         public PNDatastoreUsers UserData => _dataUsers;
         public PNPublish MessageDispatcher => _messages;
         public PNPresence Presence => _presence;
         public PNSubscribe Subscriptions => _subscribe;
         public IRemoteLobbyEventsListener RemoteEventsLobby => _networkEventsHandler;
         public INetworkEventHandler NetworkEventsHandler => _networkEventsHandler;
-        
-
-        private SubscribeCallbackListener _listener;
-        //private Pubnub _pubnub;
-        private PNPublish _messages;
-        private PNSubscribe _subscribe;
-        private PNConnection _connection;
-        private PNDatastoreUsers _dataUsers;
-        private PNPresence _presence;
-        private PNDeviceConsole _console;
-        private NetworkEventsHandler _networkEventsHandler;
-
         public PNDeviceConsole Console => _console;
-        
-        
-        public async void ConstructPNDevice(PNConfigData config, UserId userId, UserDeviceData deviceData)
-        {
-            if (string.IsNullOrEmpty(userId))
-            {
-                // It is recommended to change the UserId to a meaningful value, to be able to identify this client.
-                userId = System.Guid.NewGuid().ToString();
-            }
+        public PNConnection Connection => null;
 
+        private async void Awake()
+        {
+            Initialize(pnConfigDataAsset.Data, userId, new UserDeviceData($"dev:{userId}", DeviceType.Mobile));
+            await Hadshake();
+        }
+
+        public void Initialize(PNConfigData config, UserId userId, UserDeviceData deviceData)
+        {
+            _deviceData = deviceData;
+            _listener = new SubscribeCallbackListener();
             _networkEventsHandler = new NetworkEventsHandler(this, DeviceData);
 
-            // Listener example.
-            listener.onStatus += NetworkEventsHandler.OnPnStatus;
-            listener.onMessage += NetworkEventsHandler.OnPnMessage;
-            listener.onPresence += NetworkEventsHandler.OnPnPresence;
-            listener.onFile += NetworkEventsHandler.OnPnFile;
-            listener.onObject += NetworkEventsHandler.OnPnObject;
-            listener.onSignal += NetworkEventsHandler.OnPnSignal;
-            listener.onMessageAction += NetworkEventsHandler.OnPnMessageAction;
+            Listener.onStatus += NetworkEventsHandler.OnPnStatus;
+            Listener.onMessage += NetworkEventsHandler.OnPnMessage;
+            Listener.onPresence += NetworkEventsHandler.OnPnPresence;
+            Listener.onFile += NetworkEventsHandler.OnPnFile;
+            Listener.onObject += NetworkEventsHandler.OnPnObject;
+            Listener.onSignal += NetworkEventsHandler.OnPnSignal;
+            Listener.onMessageAction += NetworkEventsHandler.OnPnMessageAction;
 
-            Initialize(userId);
+            _pnApi = new Pubnub(CompileApiConfig(userId, config));
+            _pnApi.AddListener(Listener);
 
-            _console = new PNDeviceConsole(pubnub, this, DeviceData);
-            _messages = new PNPublish(pubnub, this);
-            _subscribe = new PNSubscribe(pubnub, this);
-            _presence = new PNPresence(pubnub, this);
-            _dataUsers = new PNDatastoreUsers(pubnub);
+            _console = new PNDeviceConsole(_pnApi, this, DeviceData);
+            _messages = new PNPublish(_pnApi, this);
+            _subscribe = new PNSubscribe(_pnApi, this);
+            _presence = new PNPresence(_pnApi, this);
+            _dataUsers = new PNDatastoreUsers(_pnApi);
+        }
 
-
+        public async Task Hadshake()
+        {
             //Handshake
-            Subscriptions.SubscribeChannels(new List<Channel> { Channels.DebugChannel });
-            await MessageDispatcher.SendMsg("Handshake", Channels.DebugChannel);
-        }        
+            await Subscriptions.SubscribeChannels(new List<Channel> { Channels.Connection, Channels.DebugChannel });
+            //await MessageDispatcher.SendMsg("Handshake", Channels.DebugChannel);
+        }
 
         private PNConfiguration CompileApiConfig(UserId _userId, PNConfigData config)
         {
             PNConfiguration pnConfiguration = new PNConfiguration(_userId);
             pnConfiguration.SubscribeKey = config.SubscribeKey;
             pnConfiguration.PublishKey = config.PublishKey;
-            //pnConfiguration.UserId = _userId;
 
             return pnConfiguration;
         }
 
         public void Clean()
         {
-            //Connection.Disconnect();
-            pubnub.UnsibscribeAll();
+            Listener.onStatus -= NetworkEventsHandler.OnPnStatus;
+            Listener.onMessage -= NetworkEventsHandler.OnPnMessage;
+            Listener.onPresence -= NetworkEventsHandler.OnPnPresence;
+            Listener.onFile -= NetworkEventsHandler.OnPnFile;
+            Listener.onObject -= NetworkEventsHandler.OnPnObject;
+            Listener.onSignal -= NetworkEventsHandler.OnPnSignal;
+            Listener.onMessageAction -= NetworkEventsHandler.OnPnMessageAction;
+
+            _pnApi.UnsubscribeAll<string>();
         }
 
-        protected override void OnDestroy()
+        protected void OnDestroy()
         {
-            // Use OnDestroy to clean up, e.g. unsubscribe from listeners.
-            listener.onStatus -= NetworkEventsHandler.OnPnStatus;
-            listener.onMessage -= NetworkEventsHandler.OnPnMessage;
-            listener.onPresence -= NetworkEventsHandler.OnPnPresence;
-            listener.onFile -= NetworkEventsHandler.OnPnFile;
-            listener.onObject -= NetworkEventsHandler.OnPnObject;
-            listener.onSignal -= NetworkEventsHandler.OnPnSignal;
-            listener.onMessageAction -= NetworkEventsHandler.OnPnMessageAction;
-
-            base.OnDestroy();
+            Clean();
         }
     }
 }

@@ -1,6 +1,7 @@
 using PubnubApi;
 using PubnubApi.Unity;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace NubEval
 {
@@ -11,7 +12,7 @@ namespace NubEval
 
         }
 
-        public void SubscribeChannels(List<Channel> channels)
+        public async Task SubscribeChannels(List<Channel> channels)
         {
             if (channels == null || channels.Count == 0) return;
 
@@ -34,6 +35,8 @@ namespace NubEval
                     .Execute();
             }
 
+            await Task.Delay(1000);
+
             if (presenceChannels.Count > 0)
             {
                 PNApi.Subscribe<string>()
@@ -41,6 +44,8 @@ namespace NubEval
                     .WithPresence()
                     .Execute();
             }
+
+            await Task.Delay(1000);
 
             PNDevice.Console.Log($"[SubscribeChannels] {channels[0].PubNubAddress}");
         }
