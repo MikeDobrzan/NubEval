@@ -13,34 +13,37 @@ namespace NubEval
 
         [Header("Services")]
         [SerializeField] private PlayerPrefsAsset DevAPlayerPrefs;
-        [SerializeField] private PlayerPrefsAsset DevBPlayerPrefs;
+        //[SerializeField] private PlayerPrefsAsset DevBPlayerPrefs;
         [SerializeField] private UserManagementInput addUserUI;
         [SerializeField] private LobbyController lobby;
 
-        private PNDevice devA;
-        private PNDevice devB;
+        [SerializeField] private PNDevice devA;
+        //private PNDevice devB;
 
         private async void Start()
         {
             var cts = new CancellationTokenSource(5000); //If not connected after 5sec;
 
             //Initialize PubNub
-            devA = new PNDevice(configAsset.Data, DevAPlayerPrefs.PnUserID, DevAPlayerPrefs.DeviceData);
-            devB = new PNDevice(configAsset.Data, DevBPlayerPrefs.PnUserID, DevBPlayerPrefs.DeviceData);
-            
-            await devA.Connection.Connect(cts.Token);
-            await devA.Presence.SetPresenceState(Channels.DebugChannel, new PresenceState("lobbyState", "In Lobby"));
-            Debug.LogError("wait 10 sec to join Dev B");
-            await Task.Delay(10000);
-            
+            //devA.ConstructPNDevice(configAsset.Data, DevAPlayerPrefs.PnUserID, DevAPlayerPrefs.DeviceData);
+            //devB = new PNDevice(configAsset.Data, DevBPlayerPrefs.PnUserID, DevBPlayerPrefs.DeviceData);
 
-            await devB.Connection.Connect(cts.Token);
-            await devB.Presence.SetPresenceState(Channels.DebugChannel, new PresenceState("lobbyState", "In Lobby"));
-            //devB.RemoteEventsLobby.SubscribeLobbyEvents(lobby);
-            Debug.LogError("wait 10 sec to connect Dev A to another channel");
-            await Task.Delay(10000);
+            //devA.ConnectListener();// .con .Connection.Connect(cts.Token);
 
-            devA.Subscriptions.SubscribeChannels(new List<Channel> { Channels.DebugChannel } );
+            //devA.Subscriptions.SubscribeChannels(new List<Channel> { Channels.DebugChannel });
+
+            //await devA.Presence.SetPresenceState(Channels.DebugChannel, new PresenceState("lobbyState", "In Lobby"));
+            //Debug.LogError("wait 10 sec to join Dev B");
+            //await Task.Delay(10000);
+
+
+            //devB.ConnectListener(); //await devB.Connection.Connect(cts.Token);
+            //await devB.Presence.SetPresenceState(Channels.DebugChannel, new PresenceState("lobbyState", "In Lobby"));
+            ////devB.RemoteEventsLobby.SubscribeLobbyEvents(lobby);
+            //Debug.LogError("wait 10 sec to connect Dev A to another channel");
+            //await Task.Delay(10000);
+
+            //devA.Subscriptions.SubscribeChannels(new List<Channel> { Channels.DebugChannel } );
 
 
             //List<Channel> channels = new List<Channel>
@@ -67,13 +70,12 @@ namespace NubEval
 
             //lobby.Construct(devA);
             //lobby.OnBoot();
-            addUserUI.Cosntruct(devA);
+            //addUserUI.Cosntruct(devA);
         }
 
         private void OnDestroy()
         {
-            devA?.Dispose();
-            devB?.Dispose();
+            //devB?.Dispose();
         }
     }
 }

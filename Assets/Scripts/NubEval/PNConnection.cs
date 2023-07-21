@@ -26,8 +26,8 @@ namespace NubEval.Networking.PubNubWrapper
             pubnubApi = InitializePubnubApi(listener);
         }
 
-        //TODO: temp property, remove it when refactor app dashboard
-        public Pubnub PN => _pubnub;
+        ////TODO: temp property, remove it when refactor app dashboard
+        //public Pubnub PN => _pubnub;
 
         private Pubnub InitializePubnubApi(SubscribeCallbackListener listener)
         {
@@ -43,6 +43,8 @@ namespace NubEval.Networking.PubNubWrapper
             pnConfiguration.PublishKey = _config.PublishKey;
             pnConfiguration.UserId = _userId;
 
+
+            Debug.LogError($"{pnConfiguration.UserId}");
             _pubnub = new Pubnub(pnConfiguration);
             _pubnub.AddListener(listener);
 
@@ -65,6 +67,8 @@ namespace NubEval.Networking.PubNubWrapper
                 .Execute();
 
             await Task.Delay(1000);
+
+            await _pubnub.Publish().Channel(Channels.DebugChannel.PubNubAddress).Message("Handshake").ExecuteAsync();
 
             //while (!_connected)
             //{

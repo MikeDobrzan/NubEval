@@ -14,6 +14,7 @@ namespace NubEval
         [SerializeField] private PNDevice networkDevice;
         [SerializeField] private PlayerPrefsAsset devicePlayerPrefs;
         [SerializeField] private TextMeshProUGUI title;
+        [SerializeField] private PNDevice device;
 
         private CancellationTokenSource cts = new CancellationTokenSource();
 
@@ -29,7 +30,7 @@ namespace NubEval
 
         public async void OnInputConnect()
         {
-            networkDevice = new PNDevice(configAsset.Data, devicePlayerPrefs.PnUserID, devicePlayerPrefs.DeviceData);
+            //networkDevice = new PNDevice(configAsset.Data, devicePlayerPrefs.PnUserID, devicePlayerPrefs.DeviceData);
 
             cts.CancelAfter(5000); //cancel trying to connect fter 5 sec
             await networkDevice.Connection.Connect(cts.Token);
@@ -52,7 +53,6 @@ namespace NubEval
         private void OnDisable()
         {
             cts.Cancel();
-            networkDevice?.Dispose();    
         }
 
         public void OnUserJoin(UserId user, UserAccountData accountData)
