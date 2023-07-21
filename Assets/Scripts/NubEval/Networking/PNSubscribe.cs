@@ -6,7 +6,7 @@ namespace NubEval
 {
     public class PNSubscribe : PNServiceBase
     {
-        public PNSubscribe(Pubnub pubnub) : base(pubnub)
+        public PNSubscribe(Pubnub pubnub, PNDevice device) : base(pubnub, device)
         {
 
         }
@@ -29,18 +29,20 @@ namespace NubEval
 
             if (publishChannels.Count > 0)
             {
-                Pubnub.Subscribe<string>()
+                PNApi.Subscribe<string>()
                     .Channels(publishChannels)
                     .Execute();
             }
 
             if (presenceChannels.Count > 0)
             {
-                Pubnub.Subscribe<string>()
+                PNApi.Subscribe<string>()
                     .Channels(presenceChannels)
                     .WithPresence()
                     .Execute();
             }
+
+            PNDevice.Console.Log($"[SubscribeChannels] {channels[0].PubNubAddress}");
         }
     }
 }

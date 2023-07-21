@@ -53,13 +53,11 @@ namespace NubEval.Networking.PubNubWrapper
 
         public async Task<bool> Connect(CancellationToken token)
         {
-            SubscribeCallbackListener connectionListener = new SubscribeCallbackListener();
+            //SubscribeCallbackListener connectionListener = new SubscribeCallbackListener();
+            //_pubnub.AddListener(connectionListener);
+            //connectionListener.onStatus += OnPnStatus;
 
-            _pubnub.AddListener(connectionListener);
-            connectionListener.onStatus += OnPnStatus;
-
-
-            if (_connected) { return true; }
+            //if (_connected) { return true; }
 
             _pubnub.Subscribe<string>()
                 .Channels(new[] { Channels.Connection.PubNubAddress })
@@ -68,22 +66,24 @@ namespace NubEval.Networking.PubNubWrapper
 
             await Task.Delay(1000);
 
-            while (!_connected)
-            {
-                try
-                {
-                    token.ThrowIfCancellationRequested();
-                    await Task.Delay(100);
-                }
-                catch (System.Exception e)
-                {
-                    Debug.LogError($"PN Connect timed out: {e}");
-                    _pubnub.RemoveListener(connectionListener);
-                    return false;
-                }
-            }
+            //while (!_connected)
+            //{
+            //    try
+            //    {
+            //        token.ThrowIfCancellationRequested();
+            //        await Task.Delay(100);
+            //    }
+            //    catch (System.Exception e)
+            //    {
+            //        Debug.LogError($"PN Connect timed out: {e}");
+            //        _pubnub.RemoveListener(connectionListener);
+            //        return false;
+            //    }
+            //}
 
-            _pubnub.RemoveListener(connectionListener);
+            //_pubnub.RemoveListener(connectionListener);
+
+            _connected = true;
 
             return true;
         }
@@ -95,10 +95,12 @@ namespace NubEval.Networking.PubNubWrapper
 
         private void OnPnStatus(Pubnub pn, PNStatus status)
         {
-            if (status.Category != PNStatusCategory.PNConnectedCategory) { }
-            else if (Channels.Connection.AddressMatch(status.AffectedChannels[0]))
+            if (status.Category == PNStatusCategory.PNConnectedCategory)
             {
-                _connected = true;
+                if (Channels.Connection.AddressMatch(status.AffectedChannels[0]))
+                {
+                    _connected = true;
+                }
             }
             else
             {

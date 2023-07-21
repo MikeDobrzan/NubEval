@@ -9,25 +9,25 @@ namespace NubEval
         ILobbyEventsHandler
     {
         [SerializeField] private LobbyPanel uiFriendList;
-        private PNDevice _remote;
+        private PNDevice _device;
 
 
         public void Construct(PNDevice pn)
         {
-            _remote = pn;
+            _device = pn;
         }
 
         public async void OnBoot()
         {
             //get all users in the lobby channel
-            var users = await _remote.Presence.GetUsersInChannel(Channels.DebugChannel);
+            var users = await _device.Presence.GetUsersInChannel(Channels.DebugChannel);
 
             List<LobbyUserItemData> uiItems = new List<LobbyUserItemData>();
 
             foreach (var user in users.Values)
             {
                 //get metadata
-                var metaData = await _remote.UserData.GetAccountDataAsync(user.ID);
+                var metaData = await _device.UserData.GetAccountDataAsync(user.ID);
 
                 UserAccountData accountData;
 
@@ -46,12 +46,12 @@ namespace NubEval
 
         void ILobbyEventsHandler.OnUserLeave(UserId user, UserAccountData accountData)
         {
-            Debug.Log($"{user} Left!");
+            _device.Console.Log($"{user} Left!");
         }
 
         void ILobbyEventsHandler.OnUserJoin(UserId user, UserAccountData accountData)
         {
-            Debug.Log($"{accountData.DisplayName} Joined!");
+            _device.Console.Log($"{accountData.DisplayName} Joined!");
         }
     }
 }

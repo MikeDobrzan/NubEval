@@ -17,11 +17,6 @@ namespace NubEval
 
         private CancellationTokenSource cts = new CancellationTokenSource();
 
-        private void Awake()
-        {
-            networkDevice = new PNDevice(configAsset.Data, devicePlayerPrefs.PnUserID, devicePlayerPrefs.DeviceData);
-        }
-
         private void Start()
         {
             
@@ -34,6 +29,8 @@ namespace NubEval
 
         public async void OnInputConnect()
         {
+            networkDevice = new PNDevice(configAsset.Data, devicePlayerPrefs.PnUserID, devicePlayerPrefs.DeviceData);
+
             cts.CancelAfter(5000); //cancel trying to connect fter 5 sec
             await networkDevice.Connection.Connect(cts.Token);
 
@@ -49,6 +46,7 @@ namespace NubEval
         public void OnInputDisconnect()
         {
             networkDevice.Connection.Disconnect();
+            title.text = "-disconnected-";
         }
 
         private void OnDisable()
@@ -67,7 +65,6 @@ namespace NubEval
             await networkDevice.Presence.SetPresenceState(Channels.DebugChannel, new PresenceState("lobbyState", "In Lobby"));
             networkDevice.RemoteEventsLobby.SubscribeLobbyEvents(this);
         }
-
 
         void ILobbyEventsHandler.OnUserJoin(UserId user, UserAccountData accountData)
         {

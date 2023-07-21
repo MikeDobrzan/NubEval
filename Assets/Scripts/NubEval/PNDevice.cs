@@ -3,7 +3,6 @@ using NubEval.Networking.PubNubWrapper;
 using PubnubApi;
 using PubnubApi.Unity;
 using System;
-using UnityEngine;
 
 namespace NubEval
 {
@@ -12,48 +11,45 @@ namespace NubEval
     /// </summary>
     public class PNDevice : IDisposable
     {
-        //[SerializeField] private PlayerPrefsAsset playerPrefs;
-
-        private SubscribeCallbackListener _listener;
-        private PNPublish _messages;
-        private PNSubscribe _subscribe;
-        private PNConnection _connection;
-        private PNDatastoreUsers _dataUsers;
-        private PNPresence _presence;
-        private INetworkEventHandler _networkEventHandler;
-        private IRemoteLobbyEventsListener _remoteLobbyEventsListener;
+        private readonly SubscribeCallbackListener _listener;
+        private readonly PNPublish _messages;
+        private readonly PNSubscribe _subscribe;
+        private readonly PNConnection _connection;
+        private readonly PNDatastoreUsers _dataUsers;
+        private readonly PNPresence _presence;
+        private readonly PNDeviceConsole _console;
+        private readonly NetworkEventsHandler _networkEventsHandler;
 
         public PNConnection Connection => _connection;
         public PNDatastoreUsers UserData => _dataUsers;
         public PNPublish MessageDispatcher => _messages;
         public PNPresence Presence => _presence;
         public PNSubscribe Subscriptions => _subscribe;
-        public IRemoteLobbyEventsListener RemoteEventsLobby => _remoteLobbyEventsListener;
-
-        private readonly NetworkEventsHandler _networkEventsHandler;
+        public IRemoteLobbyEventsListener RemoteEventsLobby => _networkEventsHandler;
+        public INetworkEventHandler NetworkEventsHandler => _networkEventsHandler;
+        public PNDeviceConsole Console => _console;      
 
         public PNDevice(PNConfigData config, UserId PnUserID, UserDeviceData deviceData)
         {
             _listener = new SubscribeCallbackListener();
             _connection = new PNConnection(PnUserID, config, _listener, out Pubnub pubnub);
+            
             _networkEventsHandler = new NetworkEventsHandler(this, deviceData);
 
-            _networkEventHandler = _networkEventsHandler;
-            _remoteLobbyEventsListener = _networkEventsHandler;
-
-            _subscribe = new PNSubscribe(pubnub);
-            _messages = new PNPublish(pubnub);
-            _presence = new PNPresence(pubnub);
+            _subscribe = new PNSubscribe(pubnub, this);
+            _messages = new PNPublish(pubnub, this);
+            _presence = new PNPresence(pubnub, this);
             _dataUsers = new PNDatastoreUsers(pubnub);
+            _console = new PNDeviceConsole(pubnub, this, deviceData);
 
             // Listener example.
-            _listener.onStatus += _networkEventHandler.OnPnStatus;
-            _listener.onMessage += _networkEventHandler.OnPnMessage;
-            _listener.onPresence += _networkEventHandler.OnPnPresence;
-            _listener.onFile += _networkEventHandler.OnPnFile;
-            _listener.onObject += _networkEventHandler.OnPnObject;
-            _listener.onSignal += _networkEventHandler.OnPnSignal;
-            _listener.onMessageAction += _networkEventHandler.OnPnMessageAction;
+            _listener.onStatus += NetworkEventsHandler.OnPnStatus;
+            _listener.onMessage += NetworkEventsHandler.OnPnMessage;
+            _listener.onPresence += NetworkEventsHandler.OnPnPresence;
+            _listener.onFile += NetworkEventsHandler.OnPnFile;
+            _listener.onObject += NetworkEventsHandler.OnPnObject;
+            _listener.onSignal += NetworkEventsHandler.OnPnSignal;
+            _listener.onMessageAction += NetworkEventsHandler.OnPnMessageAction;
         }
 
         public void Dispose()

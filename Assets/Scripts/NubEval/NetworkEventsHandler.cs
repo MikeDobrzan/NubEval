@@ -2,7 +2,7 @@ using NubEval.Networking;
 using NubEval.Networking.PubNubWrapper;
 using PubnubApi;
 using System.Collections.Generic;
-using UnityEngine;
+//using UnityEngine;
 
 namespace NubEval
 {
@@ -30,7 +30,7 @@ namespace NubEval
             if (!_lobbyEventsSubscribers.Contains(subscriber))
                 _lobbyEventsSubscribers.Add(subscriber);
 
-            Debug.Log($"{_deviceData} subs: {_lobbyEventsSubscribers.Count}");
+            _pubnub.Console.Log($"subs: {_lobbyEventsSubscribers.Count}");
         }
 
         void INetworkEventHandler.OnPnStatus(Pubnub pn, PNStatus status)
@@ -39,42 +39,42 @@ namespace NubEval
             {
                 if (Channels.Connection.AddressMatch(status.AffectedChannels[0]))
                 {
-                    Debug.Log($"{_deviceData}[Status]<color=#00FF00> Initial Connection complete</color>");
+                    _pubnub.Console.Log($"[Status]: <color=#00FF00> Initial Connection complete</color>");
                     return;
                 }
             }
 
-            Debug.Log($"{_deviceData}[{status.Operation}]");
+            _pubnub.Console.Log($"[Status]: {status.Operation}");
         }
 
         void INetworkEventHandler.OnPnMessage(Pubnub pn, PNMessageResult<object> result)
         {
-            Debug.Log($"{_deviceData}[MSG] ch={result.Channel} | {result.Message} | {result.Publisher} | {result.Timetoken}");
+            _pubnub.Console.Log($"[MSG]: ch={result.Channel} | {result.Message} | {result.Publisher} | {result.Timetoken}");
         }
 
         void INetworkEventHandler.OnPnMessageAction(Pubnub pn, PNMessageActionEventResult result)
         {
-            Debug.Log($"{_deviceData}[MSGAction] {result.Channel}");
+            _pubnub.Console.Log($"[MSGAction]: {result.Channel}");
         }
 
         void INetworkEventHandler.OnPnSignal(Pubnub pn, PNSignalResult<object> result)
         {
-            Debug.Log(result.Channel);
+            _pubnub.Console.Log(result.Channel);
         }
 
         void INetworkEventHandler.OnPnObject(Pubnub pn, PNObjectEventResult result)
         {
-            Debug.Log(result.Channel);
+            _pubnub.Console.Log(result.Channel);
         }
 
         void INetworkEventHandler.OnPnFile(Pubnub pn, PNFileEventResult result)
         {
-            Debug.Log(result.Channel);
+            _pubnub.Console.Log(result.Channel);
         }
 
         async void INetworkEventHandler.OnPnPresence(Pubnub pn, PNPresenceEventResult result)
         {
-            //Debug.Log($"{_deviceData}[Presence] {result.Uuid} <{result.Event}> ch={result.Channel} (Subs:{_lobbyEventsSubscribers.Count})");
+            _pubnub.Console.Log($"[Presence] {result.Uuid} | cmd=<{result.Event}> | ch={result.Channel} (Subs:{_lobbyEventsSubscribers.Count})");
 
             if (result.Channel != null)
             {
