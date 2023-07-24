@@ -10,7 +10,7 @@ namespace NubEval
         INetworkEventHandler,
         IRemoteLobbyEventsListener
     {
-        private readonly PNDevice _pubnub;
+        private readonly PNDevice _pnDevice;
         private readonly UserDeviceData _deviceData;
         private readonly List<ILobbyEventsHandler> _lobbyEventsSubscribers;
 
@@ -21,7 +21,7 @@ namespace NubEval
         public NetworkEventsHandler(PNDevice pubnub, UserDeviceData device)
         {
             _lobbyEventsSubscribers = new List<ILobbyEventsHandler>();
-            _pubnub = pubnub;
+            _pnDevice = pubnub;
             _deviceData = device;
         }
 
@@ -30,7 +30,7 @@ namespace NubEval
             if (!_lobbyEventsSubscribers.Contains(subscriber))
                 _lobbyEventsSubscribers.Add(subscriber);
 
-            _pubnub.Console.Log($"subs: {_lobbyEventsSubscribers.Count}");
+            _pnDevice.Console.Log($"subs: {_lobbyEventsSubscribers.Count}");
         }
 
         void INetworkEventHandler.OnPnStatus(Pubnub pn, PNStatus status)
@@ -39,42 +39,42 @@ namespace NubEval
             {
                 if (Channels.Connection.AddressMatch(status.AffectedChannels[0]))
                 {
-                    _pubnub.Console.Log($"[Status]: <color=#00FF00> Initial Connection complete</color>");
+                    _pnDevice.Console.Log($"[Status]: <color=#00FF00> Initial Connection complete</color>");
                     return;
                 }
             }
 
-            _pubnub.Console.Log($"[Status]: {status.Operation}");
+            _pnDevice.Console.Log($"[Status]: {status.Operation}");
         }
 
         void INetworkEventHandler.OnPnMessage(Pubnub pn, PNMessageResult<object> result)
         {
-            _pubnub.Console.Log($"[MSG]: ch={result.Channel} | {result.Message} | {result.Publisher} | {result.Timetoken}");
+            _pnDevice.Console.Log($"[MSG]: ch={result.Channel} | {result.Message} | {result.Publisher} | {result.Timetoken}");
         }
 
         void INetworkEventHandler.OnPnMessageAction(Pubnub pn, PNMessageActionEventResult result)
         {
-            _pubnub.Console.Log($"[MSGAction]: {result.Channel}");
+            _pnDevice.Console.Log($"[MSGAction]: {result.Channel}");
         }
 
         void INetworkEventHandler.OnPnSignal(Pubnub pn, PNSignalResult<object> result)
         {
-            _pubnub.Console.Log(result.Channel);
+            _pnDevice.Console.Log(result.Channel);
         }
 
         void INetworkEventHandler.OnPnObject(Pubnub pn, PNObjectEventResult result)
         {
-            _pubnub.Console.Log(result.Channel);
+            _pnDevice.Console.Log(result.Channel);
         }
 
         void INetworkEventHandler.OnPnFile(Pubnub pn, PNFileEventResult result)
         {
-            _pubnub.Console.Log(result.Channel);
+            _pnDevice.Console.Log(result.Channel);
         }
 
         async void INetworkEventHandler.OnPnPresence(Pubnub pn, PNPresenceEventResult result)
         {
-            _pubnub.Console.Log($"[Presence] {result.Uuid} | cmd=<{result.Event}> | ch={result.Channel} (Subs:{_lobbyEventsSubscribers.Count})");
+            _pnDevice.Console.Log($"[Presence] {result.Uuid} | cmd=<{result.Event}> | ch={result.Channel} (Subs:{_lobbyEventsSubscribers.Count})");
 
             if (result.Channel != null)
             {
@@ -85,7 +85,7 @@ namespace NubEval
 
                     UserAccountData userAccountData;
 
-                    var response = await _pubnub.UserData.GetAccountDataAsync(user);
+                    var response = await _pnDevice.UserData.GetAccountDataAsync(user);
 
                     if (response.Item1)
                     {

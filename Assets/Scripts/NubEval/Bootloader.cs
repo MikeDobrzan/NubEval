@@ -1,9 +1,11 @@
 using NubEval.Game.Networking.Data;
+using PubnubApi.Unity;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.tvOS;
+using static PubnubApi.Unity.PubnubExtensions;
 
 namespace NubEval
 {
@@ -18,11 +20,20 @@ namespace NubEval
         [SerializeField] private LobbyController lobby;
 
         [SerializeField] private PNDevice devA;
+        [SerializeField] private PNDevice devB;
         //private PNDevice devB;
 
-        private async void Start()
+        private async void Awake()
         {
             var cts = new CancellationTokenSource(5000); //If not connected after 5sec;
+
+            devA.Init();
+            devB.Init();
+
+            var listener = new SubscribeCallbackListener();
+
+            await devA.ConnectListener(listener);
+            await devB.ConnectListener(listener);
 
             //Initialize PubNub
             //devA.ConstructPNDevice(configAsset.Data, DevAPlayerPrefs.PnUserID, DevAPlayerPrefs.DeviceData);
