@@ -2,36 +2,49 @@ using NubEval.Networking;
 using NubEval.Networking.PubNubWrapper;
 using PubnubApi;
 using PubnubApi.Unity;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
-using static PubnubApi.Unity.PubnubExtensions;
 
 namespace NubEval
 {
     /// <summary>
     /// UserDevice
     /// </summary>
-    public class PNDevice : MonoBehaviour
+    public class PNDevice : IDisposable
     {
-        public int Delay;
+        private readonly Pubnub _pnApi;
+        private readonly PNPublish _messages;
+        private readonly PNSubscribe _subscribe;
+        private readonly PNDatastoreUsers _dataUsers;
+        private readonly PNPresence _presence;
+        private readonly PNDeviceConsole _console;
+        private readonly NetworkEventsHandler _networkEventsHandler;
+        private readonly UserDeviceData _deviceData;
+        private readonly PNConnection _connection;
+        private readonly bool isGlobalListener;
 
-        public PNConfigDataAsset pnConfigDataAsset;
-        public string userId;
-
-        private Pubnub _pnApi;
         private SubscribeCallbackListener _listener;
-        private PNPublish _messages;
-        private PNSubscribe _subscribe;
-        private PNDatastoreUsers _dataUsers;
-        private PNPresence _presence;
-        private PNDeviceConsole _console;
-        private NetworkEventsHandler _networkEventsHandler;
-        private UserDeviceData _deviceData;
-        private PNConnection _connection;
+        private PNGlobalListener _globalHandler;
 
-        //public SubscribeCallbackListener Listener => _listener;
-        private UserDeviceData DeviceData => _deviceData;
+        public PNDevice(PNConfigData config, UserId userId, UserDeviceData deviceData)
+        {
+            _deviceData = deviceData;
+            _pnApi = new Pubnub(CompileApiConfig(userId, config));
+
+            _networkEventsHandler = new NetworkEventsHandler(_pnApi, this, DeviceData);
+            _console = new PNDeviceConsole(_pnApi, this, DeviceData);
+            _messages = new PNPublish(_pnApi, this);
+            _subscribe = new PNSubscribe(_pnApi, this);
+            _presence = new PNPresence(_pnApi, this);
+            _dataUsers = new PNDatastoreUsers(_pnApi);
+        }
+
+        private Pubnub PnApi => _pnApi;
+
+        public SubscribeCallbackListener Listener => _listener;
+        public UserDeviceData DeviceData => _deviceData;
         public PNDatastoreUsers UserData => _dataUsers;
         public PNPublish MessageDispatcher => _messages;
         public PNPresence Presence => _presence;
@@ -41,20 +54,18 @@ namespace NubEval
         public PNDeviceConsole Console => _console;
         public PNConnection Connection => null;
 
-
-        private void Awake()
+        public void SetListener(SubscribeCallbackListener listener)
         {
+            if (listener == null)
+            {
+                Debug.LogError("Listenr Null!");
+                return;
+            }
 
-        }
-        public void Init()
-        {
-            Initialize(pnConfigDataAsset.Data, userId, new UserDeviceData($"dev:{userId}", DeviceType.Mobile));
-        }
+            if (Listener != null)
+                DisconnectListener();
 
-
-        public async Task ConnectListener(SubscribeCallbackListener Listener)
-        {
-            if (Listener == null) { Debug.LogError("Lsitenr Null!"); return; }
+            _listener = listener;
 
             Listener.onStatus += NetworkEventsHandler.OnPnStatus;
             Listener.onMessage += NetworkEventsHandler.OnPnMessage;
@@ -65,13 +76,27 @@ namespace NubEval
             Listener.onMessageAction += NetworkEventsHandler.OnPnMessageAction;
 
             _pnApi.AddListener(Listener);
-
-            await Task.Delay(Delay);
-            //Initialize(pnConfigDataAsset.Data, userId, new UserDeviceData($"dev:{userId}", DeviceType.Mobile));
-            await Hadshake();
         }
 
-        public void RemoveListener(SubscribeCallbackListener Listener)
+        public async Task Connect()
+        {
+            //Handshake
+            await Subscriptions.SubscribeChannels(new List<Channel> { Channels.Connection, Channels.DebugChannel });
+        }
+
+        public async Task Disconnect()
+        {
+            DisconnectListener();
+            Dispose();
+            await Task.Delay(1000);
+        }
+
+        public void Dispose()
+        {
+            _pnApi.UnsubscribeAll<string>();
+        }
+
+        private void DisconnectListener()
         {
             Listener.onStatus -= NetworkEventsHandler.OnPnStatus;
             Listener.onMessage -= NetworkEventsHandler.OnPnMessage;
@@ -80,44 +105,6 @@ namespace NubEval
             Listener.onObject -= NetworkEventsHandler.OnPnObject;
             Listener.onSignal -= NetworkEventsHandler.OnPnSignal;
             Listener.onMessageAction -= NetworkEventsHandler.OnPnMessageAction;
-        }
-
-        public void Initialize(PNConfigData config, UserId userId, UserDeviceData deviceData)
-        {
-            _deviceData = deviceData;
-     
-            _networkEventsHandler = new NetworkEventsHandler(this, DeviceData);
-
-            _pnApi = new Pubnub(CompileApiConfig(userId, config));
-
-            /*
-            _listener = new SubscribeCallbackListener();
-
-            Listener.onStatus += NetworkEventsHandler.OnPnStatus;
-            Listener.onMessage += NetworkEventsHandler.OnPnMessage;
-            Listener.onPresence += NetworkEventsHandler.OnPnPresence;
-            Listener.onFile += NetworkEventsHandler.OnPnFile;
-            Listener.onObject += NetworkEventsHandler.OnPnObject;
-            Listener.onSignal += NetworkEventsHandler.OnPnSignal;
-            Listener.onMessageAction += NetworkEventsHandler.OnPnMessageAction;
-
-            _pnApi.AddListener(Listener);
-            */
-
-            _console = new PNDeviceConsole(_pnApi, this, DeviceData);
-            _messages = new PNPublish(_pnApi, this);
-            _subscribe = new PNSubscribe(_pnApi, this);
-            _presence = new PNPresence(_pnApi, this);
-            _dataUsers = new PNDatastoreUsers(_pnApi);
-        }
-
-
-
-        public async Task Hadshake()
-        {
-            //Handshake
-            await Subscriptions.SubscribeChannels(new List<Channel> { Channels.Connection, Channels.DebugChannel });
-            //await MessageDispatcher.SendMsg("Handshake", Channels.DebugChannel);
         }
 
         private PNConfiguration CompileApiConfig(UserId _userId, PNConfigData config)
@@ -127,26 +114,6 @@ namespace NubEval
             pnConfiguration.PublishKey = config.PublishKey;
 
             return pnConfiguration;
-        }
-
-        public void Clean()
-        {
-            /*
-            Listener.onStatus -= NetworkEventsHandler.OnPnStatus;
-            Listener.onMessage -= NetworkEventsHandler.OnPnMessage;
-            Listener.onPresence -= NetworkEventsHandler.OnPnPresence;
-            Listener.onFile -= NetworkEventsHandler.OnPnFile;
-            Listener.onObject -= NetworkEventsHandler.OnPnObject;
-            Listener.onSignal -= NetworkEventsHandler.OnPnSignal;
-            Listener.onMessageAction -= NetworkEventsHandler.OnPnMessageAction;
-            */
-
-            _pnApi.UnsubscribeAll<string>();
-        }
-
-        protected void OnDestroy()
-        {
-            Clean();
         }
     }
 }

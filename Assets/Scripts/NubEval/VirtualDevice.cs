@@ -1,4 +1,5 @@
 using PubnubApi;
+using PubnubApi.Unity;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,13 +15,14 @@ namespace NubEval
         [SerializeField] private PNDevice networkDevice;
         [SerializeField] private PlayerPrefsAsset devicePlayerPrefs;
         [SerializeField] private TextMeshProUGUI title;
-        [SerializeField] private PNDevice device;
 
-        private CancellationTokenSource cts = new CancellationTokenSource();
+        private SubscribeCallbackListener _listener;
 
-        private void Start()
+        public void Construct(SubscribeCallbackListener listener)
         {
-            
+            _listener = listener;
+            networkDevice = new PNDevice(configAsset.Data, devicePlayerPrefs.PnUserID, devicePlayerPrefs.DeviceData);
+            networkDevice.SetListener(_listener);
         }
 
         private void OnInputSetAccountData()
@@ -30,10 +32,7 @@ namespace NubEval
 
         public async void OnInputConnect()
         {
-            //networkDevice = new PNDevice(configAsset.Data, devicePlayerPrefs.PnUserID, devicePlayerPrefs.DeviceData);
-
-            cts.CancelAfter(5000); //cancel trying to connect fter 5 sec
-            await networkDevice.Connection.Connect(cts.Token);
+            await networkDevice.Connect();
 
             var accoutData = await networkDevice.UserData.GetAccountDataAsync(devicePlayerPrefs.PnUserID);
             title.text = accoutData.Item2.DisplayName;
@@ -44,15 +43,10 @@ namespace NubEval
             await JoinLobby();
         }
 
-        public void OnInputDisconnect()
+        public async void OnInputDisconnect()
         {
-            networkDevice.Connection.Disconnect();
+            await networkDevice.Disconnect();
             title.text = "-disconnected-";
-        }
-
-        private void OnDisable()
-        {
-            cts.Cancel();
         }
 
         public void OnUserJoin(UserId user, UserAccountData accountData)
@@ -74,6 +68,12 @@ namespace NubEval
         void ILobbyEventsHandler.OnUserLeave(UserId user, UserAccountData accountData)
         {
             Debug.LogWarning($"Left: {user}");
+        }
+
+
+        private void OnDestroy()
+        {
+            networkDevice?.Dispose();
         }
     }
 }

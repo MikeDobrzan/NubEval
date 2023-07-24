@@ -15,25 +15,31 @@ namespace NubEval
 
         [Header("Services")]
         [SerializeField] private PlayerPrefsAsset DevAPlayerPrefs;
-        //[SerializeField] private PlayerPrefsAsset DevBPlayerPrefs;
+        [SerializeField] private PlayerPrefsAsset DevBPlayerPrefs;
         [SerializeField] private UserManagementInput addUserUI;
         [SerializeField] private LobbyController lobby;
 
-        [SerializeField] private PNDevice devA;
-        [SerializeField] private PNDevice devB;
-        //private PNDevice devB;
+        private PNDevice _mainDevice;
+        private SubscribeCallbackListener _pnGlobalListener;
+
+        [SerializeField] private List<VirtualDevice> virtualDevices = new List<VirtualDevice>();
 
         private async void Awake()
         {
             var cts = new CancellationTokenSource(5000); //If not connected after 5sec;
+            _pnGlobalListener = new SubscribeCallbackListener();
 
-            devA.Init();
-            devB.Init();
+            _mainDevice = new PNDevice(configAsset.Data, DevAPlayerPrefs.PnUserID, DevAPlayerPrefs.DeviceData);
+            _mainDevice.SetListener(_pnGlobalListener);
 
-            var listener = new SubscribeCallbackListener();
+            foreach (var device in virtualDevices)
+            {
+                device.Construct(_pnGlobalListener);
+            }
 
-            await devA.ConnectListener(listener);
-            await devB.ConnectListener(listener);
+            await _mainDevice.Connect();
+
+            //await devB.ConnectListener(listener);
 
             //Initialize PubNub
             //devA.ConstructPNDevice(configAsset.Data, DevAPlayerPrefs.PnUserID, DevAPlayerPrefs.DeviceData);
@@ -86,7 +92,7 @@ namespace NubEval
 
         private void OnDestroy()
         {
-            //devB?.Dispose();
+            _mainDevice?.Dispose();
         }
     }
 }
