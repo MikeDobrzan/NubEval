@@ -1,0 +1,4 @@
+namespace NubEval.Game.Networking
+{
+
+}

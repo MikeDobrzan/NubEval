@@ -15,10 +15,8 @@ namespace NubEval
         private readonly List<ILobbyEventsHandler> _lobbyEventsSubscribers;
         private readonly Pubnub _pnApi;
 
-        private const string EVENT_JOIN = "join";
-        private const string EVENT_LEAVE = "leave";
-        private const string EVENT_CHANGE_STATE = "state-change";
-      
+
+
         public NetworkEventsHandler(Pubnub api, PNDevice pubnub, UserDeviceData device)
         {
             _lobbyEventsSubscribers = new List<ILobbyEventsHandler>();
@@ -27,7 +25,7 @@ namespace NubEval
             _pnApi = api;
         }
 
-        void IRemoteLobbyEventsListener.SubscribeLobbyEvents(ILobbyEventsHandler subscriber)
+        void IRemoteLobbyEventsListener.SubscribeToLobbyEvents(ILobbyEventsHandler subscriber)
         {
             if (!_lobbyEventsSubscribers.Contains(subscriber))
                 _lobbyEventsSubscribers.Add(subscriber);
@@ -37,9 +35,11 @@ namespace NubEval
 
         void INetworkEventHandler.OnPnStatus(Pubnub pn, PNStatus status)
         {
+            string channels = $"ch=";
+
             if (FindListenerTarget(pn))
                 return;
-         
+
             if (status.Operation == PNOperationType.PNSubscribeOperation)
             {
                 if (Channels.Connection.AddressMatch(status.AffectedChannels[0]))
@@ -49,7 +49,15 @@ namespace NubEval
                 }
             }
 
-            _pnDevice.Console.Log($"[Status]: {status.Operation}");
+            if (status.Operation == PNOperationType.PNSubscribeOperation || status.Operation == PNOperationType.PNUnsubscribeOperation)
+            {
+                foreach (var ch in status.AffectedChannels)               
+                    channels += ch;               
+
+                status.AffectedChannels.ToString();
+            }
+
+            _pnDevice.Console.Log($"[Status]: {status.Operation} | {channels}");
         }
 
         void INetworkEventHandler.OnPnMessage(Pubnub pn, PNMessageResult<object> result)
@@ -94,53 +102,72 @@ namespace NubEval
 
         async void INetworkEventHandler.OnPnPresence(Pubnub pn, PNPresenceEventResult result)
         {
-            if (FindListenerTarget(pn))
-                return;
-
             _pnDevice.Console.Log($"[Presence] {result.Uuid} | cmd=<{result.Event}> | ch={result.Channel} (Subs:{_lobbyEventsSubscribers.Count})");
 
-            if (result.Channel != null)
+            //validate response
+            if (result.Channel == null)
+                return;
+
+            if (result.Channel != Channels.DebugChannel.PubNubAddress) //only listen to the debug channel for now
+                return;
+
+            UserId user = result.Uuid;
+
+            if (!ResponseNormalization.IsValidPresenceState(result.State))
+                Debug.LogWarning($"States are corrupted: {result.State == null}"); //but it will try to compile usefull data
+
+            var states = ResponseNormalization.ToPresenceStates(result.State); //if the dict is corrupted this simply returns empty list
+
+
+            UserAccountData userAccountData;
+
+            var acountDataResponse = await _pnDevice.UserData.GetAccountDataAsync(user);
+
+            if (acountDataResponse.Item1)
             {
-                UserId user = result.Uuid;
+                userAccountData = acountDataResponse.Item2;
 
-                if (result.Channel == Channels.DebugChannel.PubNubAddress)
+                var eventType = ResponseNormalization.ToPresenceEventType(result.Event);
+
+
+
+
+                switch (eventType)
                 {
-
-                    UserAccountData userAccountData;
-
-                    var response = await _pnDevice.UserData.GetAccountDataAsync(user);
-
-                    if (response.Item1)
-                    {
-                        userAccountData = response.Item2;
-
-                        if (string.Equals(result.Event, EVENT_JOIN))
+                    case PresencelEvent.unknown:
+                        Debug.LogWarning("Unknown user state received!");
+                        break;
+                    case PresencelEvent.Join: // JOIN
+                        foreach (var sub in _lobbyEventsSubscribers)
                         {
-                            foreach (var sub in _lobbyEventsSubscribers)
-                            {
-                                sub.OnUserJoin(user, userAccountData);
-                            }
+                            sub.OnUserJoin(user, userAccountData, states);
+                        }
+                        break;
+                    case PresencelEvent.Leave: // LEAVE
+
+                        foreach (var sub in _lobbyEventsSubscribers)
+                        {
+                            sub.OnUserLeave(user, userAccountData);
                         }
 
-                        if (string.Equals(result.Event, EVENT_LEAVE))
-                        {
-                            foreach (var sub in _lobbyEventsSubscribers)
-                            {
-                                sub.OnUserLeave(user, userAccountData);
-                            }
-                        }
-                    }
+                        break;
+                    case PresencelEvent.ChangeState:
+                        break;
+                    case PresencelEvent.TimedOut:
+                        break;
+                    default:
+                        break;
                 }
             }
         }
 
         private bool FindListenerTarget(Pubnub pn)
         {
-            Debug.LogWarning($"incomingID={pn.GetCurrentUserId()} | listenerID={_pnApi.GetCurrentUserId()}");
+            //Debug.LogWarning($"incomingID={pn.GetCurrentUserId()} | listenerID={_pnApi.GetCurrentUserId()}");
 
             if (pn != _pnApi)
                 return true;
-            
+
             return false;
         }
     }

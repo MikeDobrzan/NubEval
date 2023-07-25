@@ -1,5 +1,6 @@
 using PubnubApi;
 using PubnubApi.Unity;
+using NubEval.Game.Networking;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,8 +9,7 @@ using UnityEngine;
 
 namespace NubEval
 {
-    public class VirtualDevice : MonoBehaviour,
-        ILobbyEventsHandler
+    public class VirtualDevice : MonoBehaviour
     {
         [SerializeField] private PNConfigDataAsset configAsset;
         [SerializeField] private PNDevice networkDevice;
@@ -56,19 +56,25 @@ namespace NubEval
 
         private async Task JoinLobby()
         {
-            await networkDevice.Presence.SetPresenceState(Channels.DebugChannel, new PresenceState("lobbyState", "In Lobby"));
-            networkDevice.RemoteEventsLobby.SubscribeLobbyEvents(this);
+            List<PresenceState> states = new List<PresenceState>
+            {
+                new PresenceState(StateType.lobbyState, "Online"),
+                new PresenceState(StateType.matchState, "Idle")
+            };
+
+            await networkDevice.Presence.SetPresenceState(Channels.DebugChannel, states);
+            //networkDevice.RemoteEventsLobby.SubscribeToLobbyEvents(this);
         }
 
-        void ILobbyEventsHandler.OnUserJoin(UserId user, UserAccountData accountData)
-        {
-            Debug.LogWarning($"Joined: {accountData.DisplayName}");
-        }
+        //void ILobbyEventsHandler.OnUserJoin(UserId user, UserAccountData accountData)
+        //{
+        //    Debug.LogWarning($"Joined: {accountData.DisplayName}");
+        //}
 
-        void ILobbyEventsHandler.OnUserLeave(UserId user, UserAccountData accountData)
-        {
-            Debug.LogWarning($"Left: {user}");
-        }
+        //void ILobbyEventsHandler.OnUserLeave(UserId user, UserAccountData accountData)
+        //{
+        //    Debug.LogWarning($"Left: {user}");
+        //}
 
 
         private void OnDestroy()

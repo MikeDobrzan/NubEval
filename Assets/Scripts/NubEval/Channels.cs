@@ -6,7 +6,7 @@ namespace NubEval
 {
     public static class Channels
     {
-        public static Channel Connection = new Channel("connection", ChannelType.PublishOnlyChannel);
+        public static Channel Connection = new Channel("connection", ChannelType.CommChannel);
         public static Channel DebugChannel = new Channel("Channel-Barcelona", ChannelType.PresenceChannel);
         public static Channel Lobby = new Channel("lobby", ChannelType.PresenceChannel);
         

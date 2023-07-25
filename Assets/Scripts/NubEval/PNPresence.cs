@@ -1,7 +1,8 @@
+using NubEval.Networking.PubNubWrapper;
 using PubnubApi;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-//using UnityEngine;
+using UnityEngine;
 
 namespace NubEval
 {
@@ -34,18 +35,10 @@ namespace NubEval
 
                         if (oData.State != null)
                         {
-                            Dictionary<string, object> states = oData.State as Dictionary<string, object>;
+                            Dictionary<string, object> statesDict = oData.State as Dictionary<string, object>;
 
-                            foreach (KeyValuePair<string, object> stateRec in states)
-                            {
-                                pStates.Add(new PresenceState(stateRec.Key, stateRec.Value.ToString()));
-                            }
+                            pStates = ResponseNormalization.ToPresenceStates(statesDict);
                         }
-                        else
-                        {
-                            pStates.Add(new PresenceState("null", "null"));
-                        }
-
                         var user = new ConnectedUser(oData.Uuid, pStates);
                         users.Add(oData.Uuid, user);
                     }
@@ -55,26 +48,39 @@ namespace NubEval
             return users;
         }
 
-        public async Task<List<UserId>> GetUserIDsInChannel(string channel)
+        public async Task<List<UserId>> GetUserIDsInChannel(Channel channel)
         {
+            Debug.Log($"Getting users in: {channel.PubNubAddress} ");
+
             var response = await PNApi.HereNow()
-                .Channels(new[] { channel })
+                .Channels(new string[] { channel.PubNubAddress })
                 .IncludeState(true)
                 .IncludeUUIDs(true)
                 .ExecuteAsync();
 
+            Debug.Log($"ocupancy={response.Result.TotalOccupancy}");
+
             List<UserId> users = new List<UserId>();
 
-            foreach (KeyValuePair<string, PNHereNowChannelData> record in response.Result.Channels)
-            {
-                PNHereNowChannelData channelData = record.Value;
+            response.Result.Channels.TryGetValue(channel.PubNubAddress, out PNHereNowChannelData chanelContent);
 
-                if (channelData.Occupants != null && channelData.Occupants.Count > 0)
-                {
-                    foreach (var oData in channelData.Occupants)
-                        users.Add(oData.Uuid);
-                }
+            foreach (var oData in chanelContent.Occupants)
+            {
+                users.Add(oData.Uuid);
+                Debug.Log($"Found: {oData.Uuid}");
             }
+
+
+            //foreach (KeyValuePair<string, PNHereNowChannelData> record in response.Result.Channels)
+            //{
+            //    PNHereNowChannelData channelData = record.Value;
+
+            //    if (channelData.Occupants != null && channelData.Occupants.Count > 0)
+            //    {
+            //        foreach (var oData in channelData.Occupants)
+            //            users.Add(oData.Uuid);
+            //    }
+            //}
 
             return users;
         }
@@ -86,27 +92,47 @@ namespace NubEval
                 .Uuid(user)
                 .ExecuteAsync();
 
-            List<PresenceState> states = new List<PresenceState>();
+            //List<PresenceState> states = new List<PresenceState>();
 
-            string debugStr = $"States [{user}] ";
+            //string debugStr = $"States [{user}] ";
 
-            foreach (var state in responce.Result.StateByUUID.Keys)
-            {
-                responce.Result.StateByUUID.TryGetValue(state, out var value);
-                debugStr += $"<{state}>:{value} | ";
-                PNDevice.Console.Log(debugStr);
 
-                states.Add(new PresenceState(state, value.ToString()));
-            }
+            List<PresenceState> states = ResponseNormalization.ToPresenceStates(responce.Result.StateByUUID);
+
+            //foreach (var state in responce.Result.StateByUUID.Keys)
+            //{
+            //    responce.Result.StateByUUID.TryGetValue(state, out var value);
+            //    debugStr += $"<{state}>:{value} | ";
+            //    PNDevice.Console.Log(debugStr);
+
+            //    states.Add(new PresenceState(state, value.ToString()));
+            //}
 
             return states;
         }
+
 
         public async Task<List<PresenceState>> GetStatesCurrentUser(string channel)
         {
             return await GetStates(channel, CurrentUser);
         }
 
+
+        public async Task SubscribePresence(Channel channel)
+        {
+            if (channel.ChannelType != ChannelType.PresenceChannel)
+            {
+                PNDevice.Console.Log("Can't join channels without presence");
+                return;
+            }
+
+            PNApi.Subscribe<string>()
+                .Channels(new string[] { channel.PubNubAddress, channel.PresenceAddress })
+                //.WithPresence()
+                .Execute();
+
+            await Task.Delay(2000); //Note: this is workaround because Subscribe is not Async
+        }
 
 
         /// <summary>
@@ -115,10 +141,9 @@ namespace NubEval
         /// <param name="channel"></param>
         /// <param name="state"></param>
         /// <returns></returns>
-        public async Task SetPresenceState(Channel channel, PresenceState state = default)
+        public async Task SetPresenceState(Channel channel, List<PresenceState> state)
         {
             PNDevice.Console.Log($"[SetPresenceState]: UserID={PNApi.GetCurrentUserId()}");
-
 
             if (channel.ChannelType != ChannelType.PresenceChannel)
             {
@@ -126,19 +151,7 @@ namespace NubEval
                 return;
             }
 
-            //Set state
-            var newState = new Dictionary<string, object>
-            {
-                { state.StateType, state.State }
-            };
-
-            //Subscribe to the channel
-            PNApi.Subscribe<string>()
-                .Channels(new[] { channel.PubNubAddress })
-                .WithPresence()
-                .Execute();
-
-            await Task.Delay(1000); //Note: this is workaround because Subscribe is not Async
+            var newState = ResponseNormalization.BuildStatesDict(state);
 
             var responce = await PNApi.SetPresenceState()
                 .Uuid(PNApi.GetCurrentUserId())
@@ -146,20 +159,23 @@ namespace NubEval
                 .State(newState)
                 .ExecuteAsync();
 
-            //debug
-            if (responce.Result == null)
-            {
+            if (responce.Status.Error)
+                PNDevice.Console.Log("ErrorSettingStates");
+        }
 
-            }
-            else if (responce.Status.Error)
-            {
-                PNDevice.Console.Log(responce.Status.ErrorData.Information);
-            }
-            else
-            {
-                responce.Result.State.TryGetValue(state.StateType, out object obj);
-                //Debug.Log($"<{state.StateType}> set to: {obj}");
-            }
+        public async Task LeaveChannel(Channel channel)
+        {
+            PNApi.Unsubscribe<string>()
+                .Channels(new string[] { channel.PubNubAddress })
+                .Execute();
+
+            await Task.Delay(1000);
+
+            PNApi.Unsubscribe<string>()
+                .Channels(new string[] { channel.PresenceAddress })
+                .Execute();
+
+            await Task.Delay(1000);
         }
     }
 }

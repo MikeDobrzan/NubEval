@@ -13,16 +13,29 @@ namespace UIComponents
         public LobbyUserItemData(UserAccountData accountData, List<PresenceState> states)
         {
             this.accountData = accountData;
-            this.states = states;
+            this.states = new List<PresenceState>();
+            if (states != null)
+                this.states.AddRange(states);
+            else
+                Debug.LogWarning("EmptyStates!");
         }
 
         public string UserID => accountData.PubNubUserID;
         public string DisplayName => accountData.DisplayName;
-        public string PlayingState
+
+        public string MatchState
         {
             get
             {
-                return states.Find(s => s.StateType == "lobbyState").State;
+                return states.Find(s => s.StateType == StateType.matchState).State;
+            }
+        }
+
+        public string LobbyState
+        {
+            get
+            {
+                return states.Find(s => s.StateType == StateType.lobbyState).State;
             }
         }
     }

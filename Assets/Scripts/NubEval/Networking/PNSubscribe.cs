@@ -21,7 +21,7 @@ namespace NubEval
 
             foreach (var ch in channels)
             {
-                if (ch.ChannelType == ChannelType.PublishOnlyChannel)
+                if (ch.ChannelType == ChannelType.CommChannel)
                     publishChannels.Add(ch.PubNubAddress);
 
                 if (ch.ChannelType == ChannelType.PresenceChannel)

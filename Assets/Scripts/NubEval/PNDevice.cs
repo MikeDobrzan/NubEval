@@ -81,7 +81,7 @@ namespace NubEval
         public async Task Connect()
         {
             //Handshake
-            await Subscriptions.SubscribeChannels(new List<Channel> { Channels.Connection, Channels.DebugChannel });
+            await Subscriptions.SubscribeChannels(new List<Channel> { Channels.Connection });
         }
 
         public async Task Disconnect()
@@ -93,7 +93,7 @@ namespace NubEval
 
         public void Dispose()
         {
-            _pnApi.UnsubscribeAll<string>();
+            _pnApi.UnsubscribeAll();
         }
 
         private void DisconnectListener()
@@ -112,6 +112,7 @@ namespace NubEval
             PNConfiguration pnConfiguration = new PNConfiguration(_userId);
             pnConfiguration.SubscribeKey = config.SubscribeKey;
             pnConfiguration.PublishKey = config.PublishKey;
+            pnConfiguration.SetPresenceTimeoutWithCustomInterval(10, 5);
 
             return pnConfiguration;
         }

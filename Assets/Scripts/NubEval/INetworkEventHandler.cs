@@ -2,6 +2,9 @@ using PubnubApi;
 
 namespace NubEval.Networking.PubNubWrapper
 {
+    /// <summary>
+    /// PubNub network events callbacks
+    /// </summary>
     public interface INetworkEventHandler
     {
         void OnPnStatus(Pubnub pn, PNStatus result);

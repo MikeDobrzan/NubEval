@@ -26,7 +26,7 @@ namespace NubEval
 
     public enum ChannelType
     {
-        PublishOnlyChannel,
+        CommChannel,
         PresenceChannel
     }
 }

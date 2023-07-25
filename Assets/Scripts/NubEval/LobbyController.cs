@@ -42,16 +42,25 @@ namespace NubEval
             }
 
             uiFriendList.Refresh(uiItems);
+
+            _device.RemoteEventsLobby.SubscribeToLobbyEvents(this);
         }
 
         void ILobbyEventsHandler.OnUserLeave(UserId user, UserAccountData accountData)
         {
             _device.Console.Log($"{user} Left!");
+            uiFriendList.RemovePlayerCard(new LobbyUserItemData(accountData, default));
         }
 
-        void ILobbyEventsHandler.OnUserJoin(UserId user, UserAccountData accountData)
+        void ILobbyEventsHandler.OnUserJoin(UserId user, UserAccountData accountData, List<PresenceState> states)
         {
             _device.Console.Log($"{accountData.DisplayName} Joined!");
+            uiFriendList.AddPlayerCard(new LobbyUserItemData(accountData, states));
+        }
+
+        void ILobbyEventsHandler.OnUserChangeState(UserId user, List<PresenceState> states)
+        {
+            _device.Console.Log($"{user} changed state!");
         }
     }
 }

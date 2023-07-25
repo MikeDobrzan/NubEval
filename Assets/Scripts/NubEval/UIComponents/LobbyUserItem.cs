@@ -19,7 +19,7 @@ namespace UIComponents
         {
             userPnID.text = data.UserID;
             userDisplayName.text = data.DisplayName;
-            userState.text = data.PlayingState;
+            userState.text = $"[{data.LobbyState}] {data.MatchState}";
         }
     }
 }
