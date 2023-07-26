@@ -12,6 +12,12 @@ namespace NubEval
 
         }
 
+
+        public async Task SubscribeChannels(Channel channel)
+        {
+            await SubscribeChannels(new List<Channel> { channel });
+        }
+
         public async Task SubscribeChannels(List<Channel> channels)
         {
             if (channels == null || channels.Count == 0) return;
@@ -47,7 +53,7 @@ namespace NubEval
 
             await Task.Delay(1000);
 
-            PNDevice.Console.Log($"[SubscribeChannels] {channels[0].PubNubAddress}");
+            //PNDevice.Console.Log($"[SubscribeChannels] {channels[0].PubNubAddress}");
         }
     }
 }

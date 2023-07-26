@@ -1,21 +1,14 @@
 using NubEval.Networking;
+using System;
 
-namespace NubEval
+namespace NubEval.Game
 {
     [System.Serializable]
-    public struct Match : INetworkDataObject
+    public class Match
     {
-        public long MatchID;
+        public int MatchID;
+        public MatchConfig Config;
         public MatchStatus MatchStatus;
+        public DateTime MatchStart;
     }
-
-    public enum MatchStatus
-    {
-        notStarted,
-        inProgress,
-        finished,
-    }
-
-
-
 }

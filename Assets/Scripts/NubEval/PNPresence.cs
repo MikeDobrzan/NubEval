@@ -152,13 +152,13 @@ namespace NubEval
         public async Task LeaveChannel(Channel channel)
         {
             PNApi.Unsubscribe<string>()
-                .Channels(new string[] { channel.PubNubAddress, })
+                .Channels(new string[] { channel.PubNubAddress })
                 .Execute();
 
             await Task.Delay(1000);
 
             PNApi.Unsubscribe<string>()
-                .Channels(new string[] { channel.PresenceAddress })
+                .Channels(new string[] { channel.PresenceAddress, channel.PresenceAddress })
                 .Execute();
 
             await Task.Delay(1000);

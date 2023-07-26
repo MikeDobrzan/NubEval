@@ -1191,6 +1191,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b4ff9a93bd77da4ea71265790a9769e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mockData: {fileID: 11400000, guid: f74e65e83d0c5af4faf6ea46736c1c33, type: 2}
 --- !u!1 &3990114812287759038
 GameObject:
   m_ObjectHideFlags: 0
@@ -1313,9 +1314,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1808242951828648211}
-        m_TargetAssemblyTypeName: NubEval.PrototypeSendMessage, NubEval
-        m_MethodName: SendMsg
+      - m_Target: {fileID: 6372470788290827662}
+        m_TargetAssemblyTypeName: NubEval.AppDashboard, NubEval
+        m_MethodName: OnBtnAnnounceMatch
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -3053,8 +3054,12 @@ MonoBehaviour:
     _pnId: Channel-Barcelona
     _channelType: 1
   testMatch:
-    MatchID: 0
-    MatchStatus: 0
+    config:
+      matchID: 0
+      type: 0
+      name: 
+    status:
+      progress: 0
   config: {fileID: 11400000, guid: 6f78ed64fd371fb4d990f33f93ed9b55, type: 2}
   lastMsg:
     Channel: 

@@ -1,18 +1,23 @@
+using NubEval.Networking.Payloads;
 using PubnubApi;
 using System.Threading.Tasks;
 using UnityEngine;
 
 namespace NubEval
 {
+    /// <summary>
+    /// MetaData Dashboard
+    /// </summary>
     public class UserManagementInput : MonoBehaviour
     {
         [SerializeField] private UserAccountData _accountData;
+        [SerializeField] private int matchID;
 
-        private PNDevice _pn;
+        private PNDevice _device;
 
-        public void Cosntruct(PNDevice pubnub)
+        public void Cosntruct(PNDevice device)
         {
-            _pn = pubnub;
+            _device = device;
         }
 
         public async void OnBtnClickAddUser()
@@ -20,13 +25,13 @@ namespace NubEval
             if (string.IsNullOrEmpty(_accountData.PubNubUserID))
                 return;
 
-            bool success = await _pn.UserData.SetUserData(_accountData);           
+            bool success = await _device.MetadataUsers.SetUserData(_accountData);           
             Debug.Log($"Modified: {success}");
         }
 
         public async void OnBtnCheckUser()
         {
-            var r = await _pn.UserData.GetAccountDataAsync(_accountData.PubNubUserID);
+            var r = await _device.MetadataUsers.GetAccountDataAsync(_accountData.PubNubUserID);
 
             if(r.Item1)
             {
@@ -41,12 +46,19 @@ namespace NubEval
 
         public async void OnBtnGetAll()
         {
-            var users = await _pn.UserData.GetAllUserIDs();
+            var users = await _device.MetadataUsers.GetAllUserIDs();
 
             foreach (var data in users)
             {
                 Debug.Log($"{data}");
             }
+        }
+
+        public async void OnBtnCheckMetadataChannel()
+        {
+            var announcement = await _device.MetadataChannels.GetDefaultCustomData<MatchAnnouncement>(Channels.GetMatchChannel(matchID));
+
+            Debug.Log($"matchID={matchID} | name={announcement.MatchConfig.Name}");
         }
     }
 }

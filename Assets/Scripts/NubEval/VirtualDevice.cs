@@ -34,7 +34,7 @@ namespace NubEval
         {
             await networkDevice.Connect();
 
-            var accoutData = await networkDevice.UserData.GetAccountDataAsync(devicePlayerPrefs.PnUserID);
+            var accoutData = await networkDevice.MetadataUsers.GetAccountDataAsync(devicePlayerPrefs.PnUserID);
             title.text = accoutData.Item2.DisplayName;
         }
 

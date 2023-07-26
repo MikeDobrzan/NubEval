@@ -1,8 +1,5 @@
-using NubEval.Game.Networking;
 using PubnubApi.Unity;
 using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace NubEval
@@ -15,32 +12,59 @@ namespace NubEval
         [SerializeField] private PNConfigDataAsset configAsset;
 
         [Header("Services")]
-        [SerializeField] private PlayerPrefsAsset DevAPlayerPrefs;
-        [SerializeField] private UserManagementInput addUserUI;
+        [SerializeField] private PlayerPrefsAsset DevAPlayerPrefs;       
         [SerializeField] private LobbyController lobby;
-        [SerializeField] private AppDashboard dashboard;
+
+        [Header("Debug Services")]
+        [SerializeField] private UserManagementInput metadataDashboard;
+        [SerializeField] private AppDashboard gameConsole;
 
         private PNDevice _mainDevice;
         private SubscribeCallbackListener _pnGlobalListener;
 
         private void Awake()
         {
-            _pnGlobalListener = new SubscribeCallbackListener();
+            //Network Boot Actions
+            InitializePubNub();
+            SubscribeToSystemChannels();
 
-            _mainDevice = new PNDevice(configAsset.Data, DevAPlayerPrefs.PnUserID, DevAPlayerPrefs.DeviceData);
-            _mainDevice.SetListener(_pnGlobalListener);
+            //Controllers Boot Actions
+            InitializeLobby();
 
-            dashboard.Construct(_mainDevice);
+            //Debug
+            gameConsole.Construct(_mainDevice);
+            metadataDashboard.Cosntruct(_mainDevice);
 
-            lobby.Construct(_mainDevice);
-            lobby.OnBoot();
             Debug.Log("Boot Complete!");
         }
 
-
-        public async void KillDevice()
+        public async void SubscribeToSystemChannels()
         {
-            await _mainDevice.Disconnect();
+            List<Channel> channels = new List<Channel>
+            {
+                Channels.Lobby,
+                Channels.MatchesAnnouncements                
+            };
+
+            await _mainDevice.Subscriptions.SubscribeChannels(channels);
+        }
+
+        public void InitializePubNub()
+        {
+            _pnGlobalListener = new SubscribeCallbackListener();
+            _mainDevice = new PNDevice(configAsset.Data, DevAPlayerPrefs.PnUserID, DevAPlayerPrefs.DeviceData);
+            _mainDevice.SetListener(_pnGlobalListener);
+        }
+
+        public void InitializeLobby()
+        {
+            lobby.Construct(_mainDevice);
+            lobby.OnBoot();
+        }
+
+        public async void PNJoinLobby()
+        {
+            await _mainDevice.Presence.SubscribePresence(Channels.Lobby);
         }
 
         private void OnDestroy()
@@ -50,7 +74,7 @@ namespace NubEval
 
         private void OnApplicationFocus(bool focus)
         {
-            Debug.LogWarning($"AppFocus: {focus}");
+            //Debug.LogWarning($"AppFocus: {focus}");
         }
     }
 }

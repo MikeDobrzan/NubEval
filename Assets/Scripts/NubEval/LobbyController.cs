@@ -38,7 +38,7 @@ namespace NubEval
             foreach (var user in users.Values)
             {
                 //get metadata
-                var metaData = await _device.UserData.GetAccountDataAsync(user.ID);
+                var metaData = await _device.MetadataUsers.GetAccountDataAsync(user.ID);
 
                 UserAccountData accountData;
 

@@ -10,7 +10,7 @@ using UnityEngine;
 namespace NubEval
 {
     /// <summary>
-    /// UserDevice
+    /// UserDevice is a wrapper for the PubNub Api
     /// </summary>
     public class PNDevice : IDisposable
     {
@@ -18,6 +18,7 @@ namespace NubEval
         private readonly PNPublish _messages;
         private readonly PNSubscribe _subscribe;
         private readonly PNDatastoreUsers _dataUsers;
+        private readonly PNDatastoreChannels _dataChannels;
         private readonly PNPresence _presence;
         private readonly PNDeviceConsole _console;
         private readonly NetworkEventsHandler _networkEventsHandler;
@@ -39,13 +40,15 @@ namespace NubEval
             _subscribe = new PNSubscribe(_pnApi, this);
             _presence = new PNPresence(_pnApi, this);
             _dataUsers = new PNDatastoreUsers(_pnApi);
+            _dataChannels = new PNDatastoreChannels(_pnApi, this);
         }
 
         private Pubnub PnApi => _pnApi;
 
         public SubscribeCallbackListener Listener => _listener;
         public UserDeviceData DeviceData => _deviceData;
-        public PNDatastoreUsers UserData => _dataUsers;
+        public PNDatastoreUsers MetadataUsers => _dataUsers;
+        public PNDatastoreChannels MetadataChannels => _dataChannels;
         public PNPublish MessageDispatcher => _messages;
         public PNPresence Presence => _presence;
         public PNSubscribe Subscriptions => _subscribe;

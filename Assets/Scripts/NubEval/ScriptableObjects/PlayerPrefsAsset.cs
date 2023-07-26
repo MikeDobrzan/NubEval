@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace NubEval
 {
-    [CreateAssetMenu(fileName = "debug-PlayerPefs-", menuName = "Assets/Debug Mocks/PlayerPrefs")]
+    [CreateAssetMenu(fileName = "debug-PlayerPefs-", menuName = "Debug/Mocks/PlayerPrefs")]
     public class PlayerPrefsAsset : ScriptableObject
     {
         [SerializeField] private string pnUserID;

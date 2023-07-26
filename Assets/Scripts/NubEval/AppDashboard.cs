@@ -1,11 +1,15 @@
+using NubEval.Networking.Payloads;
 using PubnubApi;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace NubEval
 {
     public class AppDashboard : MonoBehaviour
     {
+        [SerializeField] private AppDashboardDataAsset mockData;
+
         private PNDevice _mainDevice;
 
         public void Construct(PNDevice device)
@@ -78,6 +82,19 @@ namespace NubEval
             }
 
             Debug.Log(msg);
+        }
+
+        public async void OnBtnAnnounceMatch()
+        {
+
+            //create match channel (with presence)
+
+            Channel matchChannel = mockData.MatchAnnouncemet.MatchConfig.Channel;
+
+            await _mainDevice.Subscriptions.SubscribeChannels(matchChannel);
+            await _mainDevice.MetadataChannels.SetDefaultCustomData(matchChannel, mockData.MatchAnnouncemet.MatchConfig);
+            await Task.Delay(2000); //give it some time and broadcast announcement //to debounce announcements
+            await _mainDevice.MessageDispatcher.SendMsg(mockData.MatchAnnouncemet, Channels.DebugChannel);
         }
 
 

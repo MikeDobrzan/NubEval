@@ -52,7 +52,7 @@ namespace NubEval
             if (status.Operation == PNOperationType.PNSubscribeOperation || status.Operation == PNOperationType.PNUnsubscribeOperation)
             {
                 foreach (var ch in status.AffectedChannels)
-                    channels += ch;
+                    channels += $"{ch}; ";
 
                 status.AffectedChannels.ToString();
             }
@@ -115,7 +115,7 @@ namespace NubEval
             UserAccountData userAccountData;
 
             var states = await _pnDevice.Presence.GetStates(Channels.DebugChannel.PubNubAddress, user);
-            var acountDataResponse = await _pnDevice.UserData.GetAccountDataAsync(user);
+            var acountDataResponse = await _pnDevice.MetadataUsers.GetAccountDataAsync(user);
 
             //if (!ResponseNormalization.IsValidPresenceState(result.State))
             //    Debug.LogWarning($"States are corrupted! receivedStateData={result.State != null}"); //but it will try to compile usefull data
