@@ -11,9 +11,16 @@ namespace NubEval
         [SerializeField] private MatchType type;
         [SerializeField] private string name;
 
-        public int MatchID { get => matchID; }
-        public MatchType MatchType { get => type; }
-        public string Name { get => name; }
+        public MatchConfig(int matchID, MatchType type, string name)
+        {
+            this.matchID = matchID;
+            this.type = type;
+            this.name = name;
+        }
+
+        public int MatchID { get => matchID; set => matchID = value; }
+        public MatchType MatchType { get => type; set => type = value; }
+        public string Name { get => name; set => name = value; }
 
         [JsonIgnore]
         public Channel Channel { get => Channels.GetMatchChannel(matchID); }

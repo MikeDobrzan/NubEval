@@ -60,5 +60,19 @@ namespace NubEval
 
             Debug.Log($"matchID={matchID} | name={announcement.MatchConfig.Name}");
         }
+
+        public async void OnBtnTestChanelMetadata()
+        {
+            var obj = new MatchAnnouncement
+            {
+                MatchConfig = new MatchConfig(124, MatchType.Ranked, "test-2423"),
+                MatchStatus = new MatchStatus()                
+            };
+
+            await _device.MetadataChannels.SetDefaultCustomData<MatchAnnouncement>(Channels.GetMatchChannel(matchID), obj);
+            await Task.Delay(2000);
+            var match = await _device.MetadataChannels.GetDefaultCustomData<MatchAnnouncement>(Channels.GetMatchChannel(matchID));
+            Debug.Log(match.MatchConfig.Name);
+        }
     }
 }

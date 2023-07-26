@@ -1,10 +1,10 @@
 using NubEval.Networking;
 using PubnubApi;
 using System.Collections.Generic;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
+using Newtonsoft.Json;
+using Codice.Client.BaseCommands;
 
 namespace NubEval
 {
@@ -17,24 +17,48 @@ namespace NubEval
         {
         }
 
-        public async Task SetDefaultCustomData(Channel channel, INetworkDataObject data)
+        //public async Task SetDefaultCustomData(Channel channel, string data)
+        //{
+        //    var dict = new Dictionary<string, object>
+        //    {
+        //        {DEFAULT_KEY, data }
+        //    };
+
+        //    var response = await PNApi.SetChannelMetadata()
+        //        .Channel(channel.PubNubAddress)
+        //        .Name("default-name")
+        //        .Custom(dict)
+        //        .IncludeCustom(true)
+        //        .ExecuteAsync();
+
+        //    Debug.Log($"SET result={response.Result != null}");
+        //}
+
+
+        public async Task SetDefaultCustomData<T>(Channel channel, T data)
         {
+            string dataJSON = JsonConvert.SerializeObject(data);
 
             var dict = new Dictionary<string, object>
             {
-                {DEFAULT_KEY, data }
+                {DEFAULT_KEY, dataJSON }
             };
 
-            await PNApi.SetChannelMetadata()
+            var response = await PNApi.SetChannelMetadata()
                 .Channel(channel.PubNubAddress)
+                .Name("default-name")
                 .Custom(dict)
                 .IncludeCustom(true)
                 .ExecuteAsync();
+
+            
+            Debug.Log($"SET status= {response != null} | result={response.Result != null}");
         }
 
         public async Task<T> GetDefaultCustomData<T>(Channel channel)
-            where T : struct, INetworkDataObject
         {
+            string debug = "[PNDatastoreChannels] ";
+
             T data = default;
 
             var response = await PNApi.GetChannelMetadata()
@@ -42,17 +66,29 @@ namespace NubEval
                 .IncludeCustom(true)
                 .ExecuteAsync();
 
-            if (response != null && response.Result != null)
+            debug += $"response={response != null} |";
+            if (response != null)
             {
-                if (response.Result.Custom != null)
+                debug += $"result={response.Result != null} |";
+                if (response.Result != null)
                 {
-                    response.Result.Custom.TryGetValue(DEFAULT_KEY, out object obj);
+                    debug += $"Custom={response.Result.Custom != null} |";
+                    if (response.Result.Custom != null)
+                    {
+                        response.Result.Custom.TryGetValue(DEFAULT_KEY, out object obj);
 
-                    data = (T)obj;
-                }                   
-                else
-                    Debug.LogWarning("Data Error");
+                        string dataJSON = (string)obj;
+
+                        Debug.Log($"RAW={dataJSON}");
+
+                        data = JsonConvert.DeserializeObject<T>(dataJSON);
+                    }
+                    else
+                        Debug.LogWarning("Data Error");
+                }
             }
+
+            Debug.Log(debug);
 
             return data;
         }

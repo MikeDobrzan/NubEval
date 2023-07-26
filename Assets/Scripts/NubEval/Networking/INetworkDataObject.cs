@@ -8,12 +8,4 @@ namespace NubEval.Networking
     {
 
     }
-
-
-    public interface IPayloadObject<TObject>
-        where TObject : struct
-    {
-        public TObject Value { get; set; }
-        public string RawJson { get; set; }
-    }
 }

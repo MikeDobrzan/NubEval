@@ -89,14 +89,18 @@ namespace NubEval
 
             //create match channel (with presence)
 
-            Channel matchChannel = mockData.MatchAnnouncemet.MatchConfig.Channel;
+            Channel matchChannel = Channels.GetMatchChannel(mockData.MatchAnnouncemet.MatchConfig.MatchID);
 
             await _mainDevice.Subscriptions.SubscribeChannels(matchChannel);
-            await _mainDevice.MetadataChannels.SetDefaultCustomData(matchChannel, mockData.MatchAnnouncemet.MatchConfig);
+            await _mainDevice.MetadataChannels.SetDefaultCustomData(matchChannel, mockData.MatchAnnouncemet);
             await Task.Delay(2000); //give it some time and broadcast announcement //to debounce announcements
-            await _mainDevice.MessageDispatcher.SendMsg(mockData.MatchAnnouncemet, Channels.DebugChannel);
-        }
+            await _mainDevice.MessageDispatcher.SendMsg(mockData.MatchAnnouncemet, matchChannel);
+            await Task.Delay(1000);
+            
+            var matchData =  await _mainDevice.MetadataChannels.GetDefaultCustomData<MatchAnnouncement>(matchChannel);
 
+            Debug.Log($"data= {matchData.MatchConfig.Name}");
+        }      
 
         //[SerializeField] private PNDevice pl;
 
