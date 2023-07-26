@@ -1385,7 +1385,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3730424723229034365, guid: e7cdf27908e165542bd9cbba2d163c96, type: 3}
       propertyPath: m_Name
-      value: DebugCommands
+      value: AppDashboard
       objectReference: {fileID: 0}
     - target: {fileID: 3733245243729700557, guid: e7cdf27908e165542bd9cbba2d163c96, type: 3}
       propertyPath: m_AnchorMax.y
@@ -1484,6 +1484,26 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6180219409342676431, guid: e7cdf27908e165542bd9cbba2d163c96, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6638880525233958976, guid: e7cdf27908e165542bd9cbba2d163c96, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6638880525233958976, guid: e7cdf27908e165542bd9cbba2d163c96, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6638880525233958976, guid: e7cdf27908e165542bd9cbba2d163c96, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6638880525233958976, guid: e7cdf27908e165542bd9cbba2d163c96, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6638880525233958976, guid: e7cdf27908e165542bd9cbba2d163c96, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}

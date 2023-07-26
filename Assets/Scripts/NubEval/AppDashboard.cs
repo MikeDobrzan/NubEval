@@ -38,14 +38,18 @@ namespace NubEval
             if (_mainDevice == null)
                 return;
 
+            await _mainDevice.Presence.SubscribePresence(Channels.DebugChannel);            
+        }
+
+        public async void OnBtnSetPresencState()
+        {
             List<PresenceState> states = new List<PresenceState>
             {
                 new PresenceState(StateType.lobbyState, "Online"),
                 new PresenceState(StateType.matchState, "Idle")
             };
 
-            await _mainDevice.Presence.SubscribePresence(Channels.DebugChannel);
-            //await _mainDevice.Presence.SetPresenceState(Channels.DebugChannel, states);
+            await _mainDevice.Presence.SetPresenceState(Channels.DebugChannel, states);
         }
 
         public async void OnButtonLeaveLobby()

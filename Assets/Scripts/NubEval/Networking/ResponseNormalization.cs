@@ -27,11 +27,7 @@ namespace NubEval.Networking.PubNubWrapper
         public static bool IsValidPresenceState(Dictionary<string, object> dict)
         {
             if(dict == null)
-            {
-                Debug.LogWarning("Dict Null");
-                return false;
-            }
-                
+                 return false;              
 
             bool hasLobbyState = dict.ContainsKey(PresenceState.LobbyStateString);
             if (!hasLobbyState)

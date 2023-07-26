@@ -7,6 +7,6 @@ namespace NubEval
     {
         void OnUserJoin(UserId user, UserAccountData accountData, List<PresenceState> states);
         void OnUserLeave(UserId user, UserAccountData accountData);
-        void OnUserChangeState(UserId user, List<PresenceState> states);
+        void OnUserChangeState(UserId user, UserAccountData accountData, List<PresenceState> states);
     }
 }

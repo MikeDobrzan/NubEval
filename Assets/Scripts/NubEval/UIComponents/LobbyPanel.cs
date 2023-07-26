@@ -45,6 +45,14 @@ namespace UIComponents
             }
         }
 
+        public void UpdatePlayerCardData(LobbyUserItemData data)
+        {
+            if (objects.TryGetValue(data.UserID, out var obj))
+            {
+                obj.UpdateData(data);
+            }
+        }
+
         private LobbyUserItem SpawnCard(LobbyUserItemData data)
         {
             var obj = Instantiate(listItemPrefab);

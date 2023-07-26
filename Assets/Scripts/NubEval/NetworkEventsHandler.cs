@@ -51,8 +51,8 @@ namespace NubEval
 
             if (status.Operation == PNOperationType.PNSubscribeOperation || status.Operation == PNOperationType.PNUnsubscribeOperation)
             {
-                foreach (var ch in status.AffectedChannels)               
-                    channels += ch;               
+                foreach (var ch in status.AffectedChannels)
+                    channels += ch;
 
                 status.AffectedChannels.ToString();
             }
@@ -112,25 +112,21 @@ namespace NubEval
                 return;
 
             UserId user = result.Uuid;
-
-            if (!ResponseNormalization.IsValidPresenceState(result.State))
-                Debug.LogWarning($"States are corrupted: {result.State == null}"); //but it will try to compile usefull data
-
-            var states = ResponseNormalization.ToPresenceStates(result.State); //if the dict is corrupted this simply returns empty list
-
-
             UserAccountData userAccountData;
 
+            var states = await _pnDevice.Presence.GetStates(Channels.DebugChannel.PubNubAddress, user);
             var acountDataResponse = await _pnDevice.UserData.GetAccountDataAsync(user);
+
+            //if (!ResponseNormalization.IsValidPresenceState(result.State))
+            //    Debug.LogWarning($"States are corrupted! receivedStateData={result.State != null}"); //but it will try to compile usefull data
+
+            //var states = ResponseNormalization.ToPresenceStates(result.State); //if the dict is corrupted this simply returns empty list          
 
             if (acountDataResponse.Item1)
             {
                 userAccountData = acountDataResponse.Item2;
 
                 var eventType = ResponseNormalization.ToPresenceEventType(result.Event);
-
-
-
 
                 switch (eventType)
                 {
@@ -149,9 +145,12 @@ namespace NubEval
                         {
                             sub.OnUserLeave(user, userAccountData);
                         }
-
                         break;
                     case PresencelEvent.ChangeState:
+                        foreach (var sub in _lobbyEventsSubscribers)
+                        {
+                            sub.OnUserChangeState(user, userAccountData, states);
+                        }
                         break;
                     case PresencelEvent.TimedOut:
                         break;

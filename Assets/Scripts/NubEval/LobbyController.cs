@@ -1,7 +1,9 @@
 using PubnubApi;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UIComponents;
 using UnityEngine;
+using static UnityEngine.UIElements.UxmlAttributeDescription;
 
 namespace NubEval
 {
@@ -17,12 +19,21 @@ namespace NubEval
             _device = pn;
         }
 
-        public async void OnBoot()
+        public void OnBoot()
         {
-            //get all users in the lobby channel
+            ////get all users in the lobby channel           
+            //var cardsData = await GetInitialDataForUI();
+            //uiFriendList.Refresh(cardsData);
+
+            _device.RemoteEventsLobby.SubscribeToLobbyEvents(this);
+        }
+
+        private async Task<List<LobbyUserItemData>> GetInitialDataForUI()
+        {
+            List<LobbyUserItemData> uiItems = new List<LobbyUserItemData>();
+            
             var users = await _device.Presence.GetUsersInChannel(Channels.DebugChannel);
 
-            List<LobbyUserItemData> uiItems = new List<LobbyUserItemData>();
 
             foreach (var user in users.Values)
             {
@@ -39,12 +50,12 @@ namespace NubEval
                 //Debug.Log($"in lobby user={user.ID} | ({user.PresenceStates[0].StateType}-{user.PresenceStates[0].State}) | ({accountData.DisplayName})");
 
                 uiItems.Add(new LobbyUserItemData(accountData, user.PresenceStates));
+                
             }
 
-            uiFriendList.Refresh(uiItems);
-
-            _device.RemoteEventsLobby.SubscribeToLobbyEvents(this);
+            return uiItems;
         }
+
 
         void ILobbyEventsHandler.OnUserLeave(UserId user, UserAccountData accountData)
         {
@@ -58,9 +69,10 @@ namespace NubEval
             uiFriendList.AddPlayerCard(new LobbyUserItemData(accountData, states));
         }
 
-        void ILobbyEventsHandler.OnUserChangeState(UserId user, List<PresenceState> states)
+        void ILobbyEventsHandler.OnUserChangeState(UserId user, UserAccountData accountData, List<PresenceState> states)
         {
             _device.Console.Log($"{user} changed state!");
+            uiFriendList.UpdatePlayerCardData(new LobbyUserItemData(accountData, states));
         }
     }
 }

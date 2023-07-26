@@ -92,23 +92,9 @@ namespace NubEval
                 .Uuid(user)
                 .ExecuteAsync();
 
-            //List<PresenceState> states = new List<PresenceState>();
-
-            //string debugStr = $"States [{user}] ";
-
-
             List<PresenceState> states = ResponseNormalization.ToPresenceStates(responce.Result.StateByUUID);
 
-            //foreach (var state in responce.Result.StateByUUID.Keys)
-            //{
-            //    responce.Result.StateByUUID.TryGetValue(state, out var value);
-            //    debugStr += $"<{state}>:{value} | ";
-            //    PNDevice.Console.Log(debugStr);
-
-            //    states.Add(new PresenceState(state, value.ToString()));
-            //}
-
-            return states;
+           return states;
         }
 
 
@@ -166,7 +152,7 @@ namespace NubEval
         public async Task LeaveChannel(Channel channel)
         {
             PNApi.Unsubscribe<string>()
-                .Channels(new string[] { channel.PubNubAddress })
+                .Channels(new string[] { channel.PubNubAddress, })
                 .Execute();
 
             await Task.Delay(1000);

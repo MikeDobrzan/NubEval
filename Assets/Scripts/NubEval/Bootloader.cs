@@ -23,7 +23,7 @@ namespace NubEval
         private PNDevice _mainDevice;
         private SubscribeCallbackListener _pnGlobalListener;
 
-        private async void Awake()
+        private void Awake()
         {
             _pnGlobalListener = new SubscribeCallbackListener();
 
@@ -33,7 +33,7 @@ namespace NubEval
             dashboard.Construct(_mainDevice);
 
             lobby.Construct(_mainDevice);
-            //lobby.OnBoot();
+            lobby.OnBoot();
             Debug.Log("Boot Complete!");
         }
 
