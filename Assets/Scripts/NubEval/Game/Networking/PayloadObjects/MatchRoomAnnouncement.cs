@@ -1,0 +1,17 @@
+using NubEval.Game.Data;
+using NubEval.PubNubWrapper;
+using UnityEngine;
+
+namespace NubEval.Game.Networking.Payload
+{
+    [System.Serializable]
+    public struct MatchRoomAnnouncement : INetworkDataObject
+    {
+        [SerializeField] private MatchConfig config;
+        [SerializeField] private MatchRoomStatus status;
+
+        public MatchConfig MatchConfig { get => config; set => config = value; }
+        public MatchRoomStatus MatchStatus { get => status; set => status = value; }
+        //public AnnouncementStatus AnnouncementStatus { get => status; set => status = value; }
+    }
+}

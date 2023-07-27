@@ -1,10 +1,11 @@
 using PubnubApi;
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
-namespace NubEval
+namespace NubEval.Game.Networking
 {
+    /// <summary>
+    /// Networked Player
+    /// </summary>
     public class ConnectedUser
     {
         public UserId ID;

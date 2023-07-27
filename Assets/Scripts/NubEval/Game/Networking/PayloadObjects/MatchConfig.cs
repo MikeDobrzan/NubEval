@@ -1,7 +1,6 @@
 using Newtonsoft.Json;
-using NubEval.Networking;
-using UnityEngine;
 using NubEval.PubNubWrapper;
+using UnityEngine;
 
 namespace NubEval.Game.Networking.Payload
 {

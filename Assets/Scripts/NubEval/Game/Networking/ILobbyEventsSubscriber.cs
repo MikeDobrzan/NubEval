@@ -1,7 +1,7 @@
 using PubnubApi;
 using System.Collections.Generic;
 
-namespace NubEval
+namespace NubEval.Game.Networking
 {
     public interface ILobbyEventsSubscriber
     {
