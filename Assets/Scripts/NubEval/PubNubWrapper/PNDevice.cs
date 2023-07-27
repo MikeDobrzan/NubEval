@@ -22,7 +22,6 @@ namespace NubEval.PubNubWrapper
         private readonly PNDeviceConsole _console;
         private readonly NetworkEventsHandler _networkEventsHandler;
         private readonly UserDeviceData _deviceData;
-        private readonly PNConnection _connection;
         private readonly bool isGlobalListener;
 
         private SubscribeCallbackListener _listener;
@@ -53,7 +52,6 @@ namespace NubEval.PubNubWrapper
         public IRemoteLobbyEventsListener RemoteEventsLobby => _networkEventsHandler;
         public INetworkEventHandler NetworkEventsHandler => _networkEventsHandler;
         public PNDeviceConsole Console => _console;
-        public PNConnection Connection => null;
 
         public void SetListener(SubscribeCallbackListener listener)
         {
