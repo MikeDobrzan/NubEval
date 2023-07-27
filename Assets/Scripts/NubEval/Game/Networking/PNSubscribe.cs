@@ -3,7 +3,7 @@ using PubnubApi.Unity;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace NubEval
+namespace NubEval.PubNubWrapper
 {
     public class PNSubscribe : PNServiceBase
     {

@@ -1,8 +1,8 @@
-using NubEval.Game.Networking;
+using NubEval.PubNubWrapper;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace NubEval.Networking.PubNubWrapper
+namespace NubEval.Game.Networking
 {
     public static class ResponseNormalization
     {

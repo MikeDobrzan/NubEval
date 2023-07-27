@@ -1,5 +1,6 @@
-using NubEval.Networking.Payloads;
-using PubnubApi;
+using NubEval.Game.Networking;
+using NubEval.Game.Networking.Payload;
+using NubEval.PubNubWrapper;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -25,7 +26,7 @@ namespace NubEval
             if (string.IsNullOrEmpty(_accountData.PubNubUserID))
                 return;
 
-            bool success = await _device.MetadataUsers.SetUserData(_accountData);           
+            bool success = await _device.MetadataUsers.SetUserData(_accountData);
             Debug.Log($"Modified: {success}");
         }
 
@@ -33,7 +34,7 @@ namespace NubEval
         {
             var r = await _device.MetadataUsers.GetAccountDataAsync(_accountData.PubNubUserID);
 
-            if(r.Item1)
+            if (r.Item1)
             {
                 var data = r.Item2;
                 Debug.Log($"{data.GameAccountId} | {data.DisplayName} | {data.PubNubUserID}");
@@ -41,7 +42,7 @@ namespace NubEval
             else
             {
                 Debug.Log("ERR");
-            }            
+            }
         }
 
         public async void OnBtnGetAll()
@@ -66,7 +67,7 @@ namespace NubEval
             var obj = new MatchAnnouncement
             {
                 MatchConfig = new MatchConfig(124, MatchType.Ranked, "test-2423"),
-                MatchStatus = new MatchStatus()                
+                MatchStatus = new MatchStatus()
             };
 
             await _device.MetadataChannels.SetDefaultCustomData<MatchAnnouncement>(Channels.GetMatchChannel(matchID), obj);

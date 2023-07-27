@@ -1,11 +1,11 @@
 using NubEval.Networking;
-using NubEval.Networking.PubNubWrapper;
+using NubEval.PubNubWrapper;
 using PubnubApi;
 using System.Collections.Generic;
 
 using System.Threading;
 
-namespace NubEval
+namespace NubEval.Game.Networking
 {
     public class NetworkEventsHandler :
         INetworkEventHandler,

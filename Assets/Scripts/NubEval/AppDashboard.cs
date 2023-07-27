@@ -1,6 +1,6 @@
-using NubEval.Networking.Payloads;
-using PubnubApi;
-using System.Collections.Generic;
+using NubEval.Game.Networking;
+using NubEval.Game.Networking.Payload;
+using NubEval.PubNubWrapper;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -42,7 +42,7 @@ namespace NubEval
             if (_mainDevice == null)
                 return;
 
-            await _mainDevice.Presence.SubscribePresence(Channels.DebugChannel);            
+            await _mainDevice.Presence.SubscribePresence(Channels.DebugChannel);
         }
 
         public async void OnBtnSetPresencState()
@@ -90,11 +90,11 @@ namespace NubEval
             await Task.Delay(2000); //give it some time and broadcast announcement //to debounce announcements
             await _mainDevice.MessageDispatcher.SendMsg(mockData.MatchAnnouncemet, matchChannel);
             await Task.Delay(1000);
-            
-            var matchData =  await _mainDevice.MetadataChannels.GetDefaultCustomData<MatchAnnouncement>(matchChannel);
+
+            var matchData = await _mainDevice.MetadataChannels.GetDefaultCustomData<MatchAnnouncement>(matchChannel);
 
             Debug.Log($"data= {matchData.MatchConfig.Name}");
-        }      
+        }
 
         //[SerializeField] private PNDevice pl;
 

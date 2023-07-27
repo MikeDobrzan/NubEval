@@ -1,12 +1,10 @@
-using NubEval.Networking;
+using Newtonsoft.Json;
 using PubnubApi;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
-using Newtonsoft.Json;
-using Codice.Client.BaseCommands;
 
-namespace NubEval
+namespace NubEval.PubNubWrapper
 {
     public class PNDatastoreChannels : PNServiceBase
     {

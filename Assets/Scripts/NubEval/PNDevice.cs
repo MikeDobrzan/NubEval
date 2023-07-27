@@ -1,3 +1,4 @@
+using NubEval.Game.Networking;
 using NubEval.Networking;
 using NubEval.Networking.PubNubWrapper;
 using PubnubApi;
@@ -7,7 +8,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace NubEval
+namespace NubEval.PubNubWrapper
 {
     /// <summary>
     /// UserDevice is a wrapper for the PubNub Api
@@ -27,7 +28,6 @@ namespace NubEval
         private readonly bool isGlobalListener;
 
         private SubscribeCallbackListener _listener;
-        private PNGlobalListener _globalHandler;
 
         public PNDevice(PNConfigData config, UserId userId, UserDeviceData deviceData)
         {

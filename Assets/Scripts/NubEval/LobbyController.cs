@@ -1,11 +1,12 @@
+using NubEval.Game.Networking;
+using NubEval.PubNubWrapper;
 using PubnubApi;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UIComponents;
 using UnityEngine;
-using static UnityEngine.UIElements.UxmlAttributeDescription;
 
-namespace NubEval
+namespace NubEval.Game
 {
     public class LobbyController : MonoBehaviour,
         ILobbyEventsSubscriber
@@ -31,7 +32,7 @@ namespace NubEval
         private async Task<List<LobbyUserItemData>> GetInitialDataForUI()
         {
             List<LobbyUserItemData> uiItems = new List<LobbyUserItemData>();
-            
+
             var users = await _device.Presence.GetUsersInChannel(Channels.DebugChannel);
 
 
@@ -50,7 +51,7 @@ namespace NubEval
                 //Debug.Log($"in lobby user={user.ID} | ({user.PresenceStates[0].StateType}-{user.PresenceStates[0].State}) | ({accountData.DisplayName})");
 
                 uiItems.Add(new LobbyUserItemData(accountData, user.PresenceStates));
-                
+
             }
 
             return uiItems;

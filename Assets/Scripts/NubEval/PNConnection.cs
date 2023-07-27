@@ -1,10 +1,11 @@
+using NubEval.Game.Networking;
 using PubnubApi;
 using PubnubApi.Unity;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace NubEval.Networking.PubNubWrapper
+namespace NubEval.PubNubWrapper
 {
     public class PNConnection
     {

@@ -1,8 +1,9 @@
 using Newtonsoft.Json;
 using NubEval.Networking;
 using UnityEngine;
+using NubEval.PubNubWrapper;
 
-namespace NubEval
+namespace NubEval.Game.Networking.Payload
 {
     [System.Serializable]
     public struct MatchConfig : INetworkDataObject

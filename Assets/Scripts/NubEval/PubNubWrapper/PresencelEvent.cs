@@ -1,4 +1,4 @@
-namespace NubEval.Networking.PubNubWrapper
+namespace NubEval.PubNubWrapper
 {
     public enum PresencelEvent
     {

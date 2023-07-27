@@ -1,6 +1,6 @@
 using PubnubApi;
 
-namespace NubEval.Networking.PubNubWrapper
+namespace NubEval.PubNubWrapper
 {
     /// <summary>
     /// PubNub network events callbacks

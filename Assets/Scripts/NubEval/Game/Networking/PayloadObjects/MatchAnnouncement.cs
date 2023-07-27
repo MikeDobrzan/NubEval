@@ -1,6 +1,7 @@
+using NubEval.PubNubWrapper;
 using UnityEngine;
 
-namespace NubEval.Networking.Payloads
+namespace NubEval.Game.Networking.Payload
 {
     [System.Serializable]
     public struct MatchAnnouncement : INetworkDataObject

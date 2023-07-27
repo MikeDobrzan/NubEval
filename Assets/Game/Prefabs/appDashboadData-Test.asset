@@ -19,3 +19,8 @@ MonoBehaviour:
       name: Abix's Game
     status:
       progress: 1
+  states:
+  - StateType: 0
+    State: Onlilne
+  - StateType: 1
+    State: Creating Match

@@ -1,4 +1,4 @@
-using NubEval.Networking.Payloads;
+using NubEval.Game.Networking.Payload;
 using System.Collections.Generic;
 using UnityEngine;
 

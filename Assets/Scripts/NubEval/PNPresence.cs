@@ -1,11 +1,10 @@
-using Newtonsoft.Json;
-using NubEval.Networking.PubNubWrapper;
+using NubEval.Game.Networking;
 using PubnubApi;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace NubEval
+namespace NubEval.PubNubWrapper
 {
     public class PNPresence : PNServiceBase
     {
@@ -86,7 +85,7 @@ namespace NubEval
             //var json = JsonConvert.SerializeObject(responce);
             //Debug.Log(json);
 
-           return states;
+            return states;
         }
 
 

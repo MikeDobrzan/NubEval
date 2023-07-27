@@ -1,7 +1,10 @@
 using UnityEngine;
 
-namespace NubEval
+namespace NubEval.PubNubWrapper
 {
+    /// <summary>
+    /// PubNub Channel
+    /// </summary>
     [System.Serializable]
     public struct Channel
     {

@@ -2,7 +2,7 @@ using NubEval.Game.Networking.Data;
 using PubnubApi;
 using System.Threading.Tasks;
 
-namespace NubEval.Networking.PubNubWrapper
+namespace NubEval.PubNubWrapper
 {
     public class PNPublish : PNServiceBase
     {

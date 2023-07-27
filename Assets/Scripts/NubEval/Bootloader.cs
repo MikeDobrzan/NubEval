@@ -1,8 +1,10 @@
+using NubEval.Game.Networking;
+using NubEval.PubNubWrapper;
 using PubnubApi.Unity;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace NubEval
+namespace NubEval.Game
 {
     /// <summary>
     /// 
@@ -12,7 +14,7 @@ namespace NubEval
         [SerializeField] private PNConfigDataAsset configAsset;
 
         [Header("Services")]
-        [SerializeField] private PlayerPrefsAsset DevAPlayerPrefs;       
+        [SerializeField] private PlayerPrefsAsset DevAPlayerPrefs;
         [SerializeField] private LobbyController lobby;
 
         [Header("Debug Services")]
@@ -43,7 +45,7 @@ namespace NubEval
             List<Channel> channels = new List<Channel>
             {
                 Channels.Lobby,
-                Channels.MatchesAnnouncements                
+                Channels.MatchesAnnouncements
             };
 
             await _mainDevice.Subscriptions.SubscribeChannels(channels);

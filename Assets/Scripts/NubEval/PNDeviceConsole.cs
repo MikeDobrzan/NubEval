@@ -1,7 +1,7 @@
 using PubnubApi;
 using UnityEngine;
 
-namespace NubEval
+namespace NubEval.PubNubWrapper
 {
     public class PNDeviceConsole : PNServiceBase
     {

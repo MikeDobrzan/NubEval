@@ -1,9 +1,6 @@
 using PubnubApi;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 
-namespace NubEval
+namespace NubEval.PubNubWrapper
 {
     public class PNServiceBase
     {
@@ -15,7 +12,7 @@ namespace NubEval
 
         public PNServiceBase(Pubnub pubnub, PNDevice device)
         {
-            _pn = pubnub;  
+            _pn = pubnub;
             _device = device;
         }
     }

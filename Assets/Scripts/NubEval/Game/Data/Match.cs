@@ -1,4 +1,4 @@
-using NubEval.Networking;
+using NubEval.Game.Networking.Payload;
 using System;
 
 namespace NubEval.Game

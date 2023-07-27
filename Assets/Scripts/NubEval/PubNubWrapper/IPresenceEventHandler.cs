@@ -2,7 +2,7 @@ using PubnubApi;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace NubEval
+namespace NubEval.PubNubWrapper
 {
     public interface IPresenceEventHandler
     {
