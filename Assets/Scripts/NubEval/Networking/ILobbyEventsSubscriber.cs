@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NubEval
 {
-    public interface ILobbyEventsHandler
+    public interface ILobbyEventsSubscriber
     {
         void OnUserJoin(UserId user, UserAccountData accountData, List<PresenceState> states);
         void OnUserLeave(UserId user, UserAccountData accountData);

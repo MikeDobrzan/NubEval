@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using NubEval.Networking.PubNubWrapper;
 using PubnubApi;
 using System.Collections.Generic;
@@ -70,35 +71,26 @@ namespace NubEval
                 Debug.Log($"Found: {oData.Uuid}");
             }
 
-
-            //foreach (KeyValuePair<string, PNHereNowChannelData> record in response.Result.Channels)
-            //{
-            //    PNHereNowChannelData channelData = record.Value;
-
-            //    if (channelData.Occupants != null && channelData.Occupants.Count > 0)
-            //    {
-            //        foreach (var oData in channelData.Occupants)
-            //            users.Add(oData.Uuid);
-            //    }
-            //}
-
             return users;
         }
 
-        public async Task<List<PresenceState>> GetStates(string channel, UserId user)
+        public async Task<List<PresenceState>> GetStates(Channel channel, UserId user)
         {
             var responce = await PNApi.GetPresenceState()
-                .Channels(new[] { channel })
+                .Channels(new[] { channel.PubNubAddress })
                 .Uuid(user)
                 .ExecuteAsync();
 
             List<PresenceState> states = ResponseNormalization.ToPresenceStates(responce.Result.StateByUUID);
 
+            //var json = JsonConvert.SerializeObject(responce);
+            //Debug.Log(json);
+
            return states;
         }
 
 
-        public async Task<List<PresenceState>> GetStatesCurrentUser(string channel)
+        public async Task<List<PresenceState>> GetStatesCurrentUser(Channel channel)
         {
             return await GetStates(channel, CurrentUser);
         }
@@ -120,13 +112,6 @@ namespace NubEval
             await Task.Delay(2000); //Note: this is workaround because Subscribe is not Async
         }
 
-
-        /// <summary>
-        /// Will automatically subscribe to it
-        /// </summary>
-        /// <param name="channel"></param>
-        /// <param name="state"></param>
-        /// <returns></returns>
         public async Task SetPresenceState(Channel channel, List<PresenceState> state)
         {
             PNDevice.Console.Log($"[SetPresenceState]: UserID={PNApi.GetCurrentUserId()}");

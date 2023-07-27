@@ -1,3 +1,4 @@
+using PubnubApi;
 using UnityEngine;
 
 namespace NubEval
@@ -15,6 +16,13 @@ namespace NubEval
             this.gameAccountId = gameAccountId;
             this.pubnubUserId = pubnubUserId;
             this.displayName = displayName;
+        }
+
+        public UserAccountData(UserId pubnubUserId)
+        {
+            this.gameAccountId = "guest_account";
+            this.pubnubUserId = pubnubUserId;
+            this.displayName = "Guest";
         }
 
         public string GameAccountId => gameAccountId;

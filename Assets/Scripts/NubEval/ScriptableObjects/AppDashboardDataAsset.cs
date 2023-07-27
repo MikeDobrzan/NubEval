@@ -1,4 +1,5 @@
 using NubEval.Networking.Payloads;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace NubEval
@@ -7,7 +8,9 @@ namespace NubEval
     public class AppDashboardDataAsset : ScriptableObject
     {
         [SerializeField] private MatchAnnouncement matchAnnouncemet;
+        [SerializeField] private List<PresenceState> states;
 
         public MatchAnnouncement MatchAnnouncemet { get => matchAnnouncemet; }
+        public List<PresenceState> States { get => states; }
     }
 }

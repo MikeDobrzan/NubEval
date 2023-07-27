@@ -47,13 +47,7 @@ namespace NubEval
 
         public async void OnBtnSetPresencState()
         {
-            List<PresenceState> states = new List<PresenceState>
-            {
-                new PresenceState(StateType.lobbyState, "Online"),
-                new PresenceState(StateType.matchState, "Idle")
-            };
-
-            await _mainDevice.Presence.SetPresenceState(Channels.DebugChannel, states);
+            await _mainDevice.Presence.SetPresenceState(Channels.Lobby, mockData.States);
         }
 
         public async void OnButtonLeaveLobby()

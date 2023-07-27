@@ -2,7 +2,8 @@ using NubEval.Networking;
 using NubEval.Networking.PubNubWrapper;
 using PubnubApi;
 using System.Collections.Generic;
-using UnityEngine;
+
+using System.Threading;
 
 namespace NubEval
 {
@@ -12,20 +13,23 @@ namespace NubEval
     {
         private readonly PNDevice _pnDevice;
         private readonly UserDeviceData _deviceData;
-        private readonly List<ILobbyEventsHandler> _lobbyEventsSubscribers;
+        private readonly List<ILobbyEventsSubscriber> _lobbyEventsSubscribers;
         private readonly Pubnub _pnApi;
 
-
+        private readonly IPresenceEventHandler _handlerLobbyPresence;
+        private readonly IPresenceEventHandler _handlerDebugPresence;
 
         public NetworkEventsHandler(Pubnub api, PNDevice pubnub, UserDeviceData device)
         {
-            _lobbyEventsSubscribers = new List<ILobbyEventsHandler>();
+            _lobbyEventsSubscribers = new List<ILobbyEventsSubscriber>();
             _pnDevice = pubnub;
             _deviceData = device;
             _pnApi = api;
+
+            _handlerLobbyPresence = new LobbyPresenceEventsHandler(pubnub, _lobbyEventsSubscribers);
         }
 
-        void IRemoteLobbyEventsListener.SubscribeToLobbyEvents(ILobbyEventsHandler subscriber)
+        void IRemoteLobbyEventsListener.SubscribeToLobbyEvents(ILobbyEventsSubscriber subscriber)
         {
             if (!_lobbyEventsSubscribers.Contains(subscriber))
                 _lobbyEventsSubscribers.Add(subscriber);
@@ -105,59 +109,20 @@ namespace NubEval
             _pnDevice.Console.Log($"[Presence] {result.Uuid} | cmd=<{result.Event}> | ch={result.Channel} (Subs:{_lobbyEventsSubscribers.Count})");
 
             //validate response
-            if (result.Channel == null)
+            if (result == null || result.Channel == null)
                 return;
 
-            if (result.Channel != Channels.DebugChannel.PubNubAddress) //only listen to the debug channel for now
-                return;
-
-            UserId user = result.Uuid;
-            UserAccountData userAccountData;
-
-            var states = await _pnDevice.Presence.GetStates(Channels.DebugChannel.PubNubAddress, user);
-            var acountDataResponse = await _pnDevice.MetadataUsers.GetAccountDataAsync(user);
-
-            //if (!ResponseNormalization.IsValidPresenceState(result.State))
-            //    Debug.LogWarning($"States are corrupted! receivedStateData={result.State != null}"); //but it will try to compile usefull data
-
-            //var states = ResponseNormalization.ToPresenceStates(result.State); //if the dict is corrupted this simply returns empty list          
-
-            if (acountDataResponse.Item1)
+            if (result.Channel == Channels.Lobby.PubNubAddress)
             {
-                userAccountData = acountDataResponse.Item2;
-
-                var eventType = ResponseNormalization.ToPresenceEventType(result.Event);
-
-                switch (eventType)
-                {
-                    case PresencelEvent.unknown:
-                        Debug.LogWarning("Unknown user state received!");
-                        break;
-                    case PresencelEvent.Join: // JOIN
-                        foreach (var sub in _lobbyEventsSubscribers)
-                        {
-                            sub.OnUserJoin(user, userAccountData, states);
-                        }
-                        break;
-                    case PresencelEvent.Leave: // LEAVE
-
-                        foreach (var sub in _lobbyEventsSubscribers)
-                        {
-                            sub.OnUserLeave(user, userAccountData);
-                        }
-                        break;
-                    case PresencelEvent.ChangeState:
-                        foreach (var sub in _lobbyEventsSubscribers)
-                        {
-                            sub.OnUserChangeState(user, userAccountData, states);
-                        }
-                        break;
-                    case PresencelEvent.TimedOut:
-                        break;
-                    default:
-                        break;
-                }
+                var cts = new CancellationTokenSource(3000);
+                await _handlerLobbyPresence.OnEventAsync(result, cts.Token);
             }
+
+            //if (result.Channel == Channels.DebugChannel.PubNubAddress)
+            //{
+            //    var cts = new CancellationTokenSource(3000);
+            //    await _handlerLobbyPresence.OnEventAsync(result, cts.Token);
+            //}
         }
 
         private bool FindListenerTarget(Pubnub pn)

@@ -8,7 +8,7 @@ using static UnityEngine.UIElements.UxmlAttributeDescription;
 namespace NubEval
 {
     public class LobbyController : MonoBehaviour,
-        ILobbyEventsHandler
+        ILobbyEventsSubscriber
     {
         [SerializeField] private LobbyPanel uiFriendList;
         private PNDevice _device;
@@ -57,19 +57,19 @@ namespace NubEval
         }
 
 
-        void ILobbyEventsHandler.OnUserLeave(UserId user, UserAccountData accountData)
+        void ILobbyEventsSubscriber.OnUserLeave(UserId user, UserAccountData accountData)
         {
             _device.Console.Log($"{user} Left!");
             uiFriendList.RemovePlayerCard(new LobbyUserItemData(accountData, default));
         }
 
-        void ILobbyEventsHandler.OnUserJoin(UserId user, UserAccountData accountData, List<PresenceState> states)
+        void ILobbyEventsSubscriber.OnUserJoin(UserId user, UserAccountData accountData, List<PresenceState> states)
         {
             _device.Console.Log($"{accountData.DisplayName} Joined!");
             uiFriendList.AddPlayerCard(new LobbyUserItemData(accountData, states));
         }
 
-        void ILobbyEventsHandler.OnUserChangeState(UserId user, UserAccountData accountData, List<PresenceState> states)
+        void ILobbyEventsSubscriber.OnUserChangeState(UserId user, UserAccountData accountData, List<PresenceState> states)
         {
             _device.Console.Log($"{user} changed state!");
             uiFriendList.UpdatePlayerCardData(new LobbyUserItemData(accountData, states));

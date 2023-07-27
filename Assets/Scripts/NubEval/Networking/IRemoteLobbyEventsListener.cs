@@ -6,6 +6,6 @@ namespace NubEval.Networking
 {
     public interface IRemoteLobbyEventsListener
     {
-        void SubscribeToLobbyEvents(ILobbyEventsHandler subscriber);
+        void SubscribeToLobbyEvents(ILobbyEventsSubscriber subscriber);
     }
 }
