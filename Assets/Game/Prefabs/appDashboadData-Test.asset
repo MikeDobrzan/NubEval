@@ -13,10 +13,13 @@ MonoBehaviour:
   m_Name: appDashboadData-Test
   m_EditorClassIdentifier: 
   matchAnnouncemet:
+    announcementID:
+      channel: 
+      timetoken: 0
     config:
       matchID: 56456463
       type: 1
-      name: Abix's Game
+      name: Abix's Finally
     status:
       progress: 1
   states:

@@ -2,11 +2,12 @@ using PubnubApi;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using NubEval.PubNubWrapper;
 
 namespace NubEval.Game.Data
 {
     [System.Serializable]
-    public class MatchRoomStatus
+    public struct MatchRoomStatus : INetworkDataObject
     {
         [SerializeField] private MatchProgress progress;
         [SerializeField] private List<UserId> players;

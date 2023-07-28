@@ -9,8 +9,6 @@ namespace NubEval.Game.UIComponents
         [SerializeField] LobbyUserItem listItemPrefab;
 
         [SerializeField] private List<LobbyUserItemData> lobbyPanelDatas = new List<LobbyUserItemData>();
-        //[SerializeField] private List<LobbyUserItem> objects = new List<LobbyUserItem>();
-
         private Dictionary<string, LobbyUserItem> objects = new Dictionary<string, LobbyUserItem>();
 
 

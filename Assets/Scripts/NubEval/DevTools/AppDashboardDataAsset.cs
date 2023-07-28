@@ -11,7 +11,7 @@ namespace NubEval.DevTools
         [SerializeField] private MatchRoomAnnouncement matchAnnouncemet;
         [SerializeField] private List<PresenceState> states;
 
-        public MatchRoomAnnouncement MatchAnnouncemet { get => matchAnnouncemet; }
+        public MatchRoomAnnouncement MatchAnnouncement { get => matchAnnouncemet; }
         public List<PresenceState> States { get => states; }
     }
 }

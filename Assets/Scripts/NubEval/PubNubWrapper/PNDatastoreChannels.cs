@@ -14,7 +14,7 @@ namespace NubEval.PubNubWrapper
         {
         }
 
-        public async Task SetDefaultCustomData<T>(Channel channel, T data)
+        public async Task<T> SetDefaultCustomData<T>(Channel channel, T data)
         {
             string dataJSON = JsonConvert.SerializeObject(data);
 
@@ -29,6 +29,12 @@ namespace NubEval.PubNubWrapper
                 .Custom(dict)
                 .IncludeCustom(true)
                 .ExecuteAsync();
+
+            response.Result.Custom.TryGetValue(DEFAULT_KEY, out object obj);
+            string returnJSON = (string)obj;
+
+            var returnData = JsonConvert.DeserializeObject<T>(returnJSON);
+            return returnData;
         }
 
         public async Task<T> GetDefaultCustomData<T>(Channel channel)

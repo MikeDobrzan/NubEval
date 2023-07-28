@@ -91,20 +91,38 @@ namespace NubEval.DevTools
 
         public async void OnBtnAnnounceMatch()
         {
+            var announcement = mockData.MatchAnnouncement;
 
             //create match channel (with presence)
+            Channel matchChannel = Channels.GetMatchChannel(mockData.MatchAnnouncement.MatchConfig.MatchID);
 
-            Channel matchChannel = Channels.GetMatchChannel(mockData.MatchAnnouncemet.MatchConfig.MatchID);
+            var announcementResponse = await _mainDevice.MessageDispatcher.SendMsg(mockData.MatchAnnouncement, Channels.MatchesAnnouncements);
+
+            //get timestamped id from the message publishing
+            announcement.AnnouncementMessage = announcementResponse.Item2;
 
             await _mainDevice.Subscriptions.SubscribeChannels(matchChannel);
-            await _mainDevice.MetadataChannels.SetDefaultCustomData(matchChannel, mockData.MatchAnnouncemet);
+            await _mainDevice.MetadataChannels.SetDefaultCustomData(matchChannel, announcement);
+
             await Task.Delay(2000); //give it some time and broadcast announcement //to debounce announcements
-            await _mainDevice.MessageDispatcher.SendMsg(mockData.MatchAnnouncemet, matchChannel);
-            await Task.Delay(1000);
+
+
+
 
             var matchData = await _mainDevice.MetadataChannels.GetDefaultCustomData<MatchRoomAnnouncement>(matchChannel);
+            Debug.Log($"AnnouncementID=({matchData.AnnouncementMessage.Channel},{matchData.AnnouncementMessage.Timetoken}) : {matchData.MatchConfig.Name}");
 
-            Debug.Log($"data= {matchData.MatchConfig.Name}");
+            await Task.Delay(4000);
+
+
+            //delete announcemet for test
+
+            await _mainDevice.MessageDispatcher.DeleteFromHistory(matchData.AnnouncementMessage);
+        }
+
+        public async void OnBtnDeletematchroom()
+        {
+
         }
 
         //[SerializeField] private PNDevice pl;
