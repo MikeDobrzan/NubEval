@@ -10,7 +10,7 @@ namespace NubEval
         [SerializeField] private Vector2 boardPoistion;
 
 
-        public PlayerState(bool isKilled, Vector2 boardPoistion, Color color)
+        public PlayerState(Vector2 boardPoistion, bool isKilled)
         {
             this.isKilled = isKilled;
             this.boardPoistion = boardPoistion;
@@ -19,5 +19,10 @@ namespace NubEval
         public bool IsKilled { get => isKilled; set => isKilled = value; }
         public Vector2 BoardPoistion { get => boardPoistion; set => boardPoistion = value; }
 
+
+        public static PlayerState InitialState()
+        {
+            return new PlayerState(new Vector2(0,0), false);
+        }
     }
 }

@@ -4,14 +4,20 @@ namespace NubEval
 {
     public struct PlayerAction
     {
+        public PlayerAction(Vector2 moveTo, bool shoot)
+        {
+            MoveDir = moveTo;
+            Shoot = shoot;
+        }
+
         /// <summary>
         /// DestinationPosition
         /// </summary>
-        public Vector2 MoveTo { get; set; }
+        public Vector2 MoveDir { get; set; }
 
         /// <summary>
-        /// Shoot at player ID
+        /// Shoot
         /// </summary>
-        public int ShootAt { get; set; }
+        public bool Shoot { get; set; }
     }
 }
