@@ -1,4 +1,7 @@
+using Newtonsoft.Json;
+using PubnubApi;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace NubEval
@@ -9,12 +12,34 @@ namespace NubEval
     public class MatchStateController
     {
         private MatchStateData _matchStateData;
-     
-        //TODO: modify state data directly?;
-        private readonly  Dictionary<int, PlayerState> _playersStates = new Dictionary<int, PlayerState>();
 
-        public int NextPlayer { get; private set; }
+        //TODO: modify state data directly?;
+        private readonly Dictionary<int, PlayerState> _playersStates = new Dictionary<int, PlayerState>();
+
+        public int NextPlayerIndex { get; private set; }
+
+        public string NextPlayerID
+        {
+            get
+            {
+                if (_matchStateData.Participants.TryGetValue(NextPlayerIndex, out ParticipantData data))
+                    return data.PnUser;
+                else
+                {
+                    Debug.Log("MatchStateData corrupted");
+                    return default;
+                }
+            }
+        }
+
         public MatchStateData CurrentStateData => _matchStateData;
+        public string MatchStateJSON
+        {
+            get
+            {
+                return JsonConvert.SerializeObject(_matchStateData);
+            }
+        }
 
         public MatchStateController()
         {
@@ -24,6 +49,12 @@ namespace NubEval
         public PlayerState GetParticipantState(int id)
         {
             return _playersStates[id];
+        }
+
+        public int GetPlayerIndex(UserId user)
+        {
+            var record = _matchStateData.Participants.FirstOrDefault(u => u.Value.PnUser == user);
+            return record.Value.Index;
         }
 
         private void SetPlayerState(int id, PlayerState state)
@@ -40,21 +71,25 @@ namespace NubEval
             //Set the new state 
             SetPlayerState(id, newState);
 
+            _matchStateData.CurrentScriptStep += 1;
+
             //update state data
-            _matchStateData.PlayerStates[new ParticipantID(id)] = newState;
+            _matchStateData.PlayerStates[id] = newState;
         }
 
         public void NetworkPublishState(MatchStateData state)
         {
             _matchStateData = state;
 
+            Debug.Log(MatchStateJSON);
+
             //set next player
-            NextPlayer = state.Script.Turns[state.CurrentScriptStep];
+            NextPlayerIndex = state.Script.Turns[state.CurrentScriptStep];
 
             //replace states
             foreach (var key in state.PlayerStates.Keys)
             {
-                _playersStates[key.Index] = state.PlayerStates[key];
+                _playersStates[key] = state.PlayerStates[key];
             }
         }
 

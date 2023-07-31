@@ -10,9 +10,9 @@ namespace NubEval
     public class RemotePlayerParticipant : IMatchParticipant
     {
         private PlayerData _playerData;
-        private ParticipantID _participantID;
+        private ParticipantData _participantID;
 
-        public RemotePlayerParticipant(ParticipantID id, PlayerData playerData)
+        public RemotePlayerParticipant(ParticipantData id, PlayerData playerData)
         {
             _participantID = id;
             _playerData = playerData;
@@ -20,7 +20,7 @@ namespace NubEval
 
         PlayerData IMatchParticipant.PlayerData => _playerData;
 
-        ParticipantID IMatchParticipant.ParticipantID => _participantID;
+        ParticipantData IMatchParticipant.ParticipantID => _participantID;
 
         public Task<PlayerAction> RequestActionAsync(PlayerTurn playerTurn, CancellationToken token)
         {

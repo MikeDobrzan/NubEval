@@ -3,6 +3,7 @@ using NubEval.Game.Networking.Payload;
 using PubnubApi;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -22,29 +23,54 @@ namespace NubEval.Game
         [SerializeField] private PlayerVisual thisPlayerAvatar;
         [SerializeField] private PlayerVisual remotePlayerAvatar;
         [SerializeField] private MatchSeed seed;
+        [SerializeField] private PlayerState playerState;
 
         //private IMatchParticipant localPlayerParticipant;
-        private Dictionary<ParticipantID, IMatchParticipant> participants;
-        private Dictionary<ParticipantID, PlayerVisual> avatars;
-        private Dictionary<ParticipantID, PlayerData> participantDatas;
-
-        public UserId ThisPlayerId;
-        public ParticipantID thisPlayerInMatch = new ParticipantID(0);
+        private Dictionary<int, IMatchParticipant> participants;
+        private Dictionary<int, ParticipantData> participantDatas;
+        private Dictionary<int, PlayerVisual> avatars;
+        
+        //public UserId ThisPlayerId;
+        //public ParticipantData thisPlayerInMatch;
 
         private MatchStateController _matchState;
+
+        private string CurrentUser => uuid;
 
         //public Dictionary<int, PlayerState> playerStates;
 
         [SerializeField] private PlayerData mockLocalPlayerData;
         [SerializeField] private PlayerData mockRemotePlayerData;
-
+        [SerializeField] private List<ParticipantData> mock_participants;
 
         [Header("Debug")]
         [SerializeField] MatchStateData debug_matchStateData;
+        
+        [Range(0, 1)]
+        public int IamIndex;
+        public string uuid;
+
+
+        public void Update()
+        {
+            if (participantDatas == null)
+                return;
+
+            uuid = participantDatas[IamIndex].PnUser;
+        }
+
 
         private async void Start()
         {
+            participantDatas = new Dictionary<int, ParticipantData>();
+
+            foreach (var p in mock_participants)
+            {
+                participantDatas.Add(p.Index, p);
+            }
+
             _matchState = new MatchStateController();
+            //thisPlayerInMatch = new ParticipantData(0, ThisPlayerId);
 
             MatchStateData initialMatchState = SetInitialState(seed);
 
@@ -61,7 +87,7 @@ namespace NubEval.Game
             //Add remote players
             _matchState.NetworkPublishState(initialMatchState);
 
-            ParticipantID nextPlayer = new ParticipantID(_matchState.NextPlayer);
+            int nextPlayer = _matchState.NextPlayerIndex;
 
 
             OnNetworkMatchStateReceived(initialMatchState);
@@ -72,7 +98,7 @@ namespace NubEval.Game
 
             await Task.Delay(3000);
 
-            if (nextPlayer.Index == thisPlayerInMatch.Index)
+            if (_matchState.NextPlayerID == CurrentUser)
             {
                 //Wait for the player
 
@@ -81,7 +107,7 @@ namespace NubEval.Game
                 var cts = new CancellationTokenSource(10000);
 
                 var playerTurn = PlayerTurn.NewTurn();
-                var action = await participants[thisPlayerInMatch].RequestActionAsync(playerTurn, cts.Token);
+                var action = await participants[_matchState.GetPlayerIndex(CurrentUser)].RequestActionAsync(playerTurn, cts.Token);
 
                 //Apply the action
                 _matchState.ApplyPlayerAction(0, action);// .SetPlayerState(0, newState);
@@ -90,6 +116,7 @@ namespace NubEval.Game
                 //thisPlayerAvatar.UpdateState(_matchState.GetParticipantState(0));
 
                 Debug.Log($"Thank you for Your Turn!: {action.MoveDir}");
+                await OnLocalPlayerEndTurn();
             }
             else
             {
@@ -100,20 +127,30 @@ namespace NubEval.Game
 
         }
 
+
+        //private bool IsCurrentUser(int index)
+        //{
+        //    _matchState.NextPlayerIndex .CurrentStateData.cur
+
+        //    return participantDatas.Any(p => p.Value.PnUser == uuid);
+        //}
+
         public void OnNetworkMatchInitialStateReceived(MatchStateData matchState)
         {
+
+
             //Create participants (mocks for now)
-            participants = new Dictionary<ParticipantID, IMatchParticipant>
+            participants = new Dictionary<int, IMatchParticipant>
             {
-                { new ParticipantID(0), new LocalPlayerParticipant(new ParticipantID(0), playerInput, mockLocalPlayerData) },
-                { new ParticipantID(1), new RemotePlayerParticipant(new ParticipantID(1), mockRemotePlayerData) }
+                { 0, new LocalPlayerParticipant(participantDatas[0], playerInput, mockLocalPlayerData) },
+                { 1, new RemotePlayerParticipant(participantDatas[1], mockRemotePlayerData) }
             };
 
             //Spawn Avatars
-            avatars = new Dictionary<ParticipantID, PlayerVisual>
+            avatars = new Dictionary<int, PlayerVisual>
             {
-                { new ParticipantID(0), thisPlayerAvatar },
-                { new ParticipantID(1), remotePlayerAvatar }
+                { 0, thisPlayerAvatar },
+                { 1, remotePlayerAvatar }
             };
         }
 
@@ -121,32 +158,36 @@ namespace NubEval.Game
         {
             for (int i = 0; i < participants.Count; i++)
             {
-                var pID = new ParticipantID(i);
-                participants.TryGetValue(pID, out IMatchParticipant participant);
+                participants.TryGetValue(i, out IMatchParticipant participant);
                 if (participant != null)
                 {
-                    bool isLocal = participant.ParticipantID.Index == thisPlayerInMatch.Index;
+                    bool isLocal = participant.ParticipantID.Index == _matchState.GetPlayerIndex(CurrentUser);
 
-                    avatars[pID].UpdateState(matchState.PlayerStates[pID]);
-                    avatars[pID].UpdateData(participant.PlayerData, isLocal); //or get the data from AppContext every time
+                    avatars[i].UpdateState(matchState.PlayerStates[i]);
+                    avatars[i].UpdateData(participant.PlayerData, isLocal); //or get the data from AppContext every time
                 }
             }
         }
 
+        public async Task OnLocalPlayerEndTurn()
+        {
+            Debug.Log(_matchState.MatchStateJSON);
+
+            await Task.CompletedTask;
+        }
+
+
         private MatchStateData SetInitialState(MatchSeed seed)
         {
-            Dictionary<ParticipantID, PlayerState> playerStates = new Dictionary<ParticipantID, PlayerState>();
+            Dictionary<int, PlayerState> playerStates = new Dictionary<int, PlayerState>();
 
             for (int i = 0; i < seed.StartLocations.Count; i++)
             {
-                Debug.Log(i);
-
                 var state = new PlayerState(seed.StartLocations[i], false);
-
-                playerStates.Add(new ParticipantID(i), state);
+                playerStates.Add(i, state);
             }
 
-            return new MatchStateData(0, playerStates, seed.Script);
+            return new MatchStateData(0, participantDatas, playerStates, seed.Script);
         }
 
         private void OnPlayerRequestAction(PlayerState currentState, PlayerAction action)

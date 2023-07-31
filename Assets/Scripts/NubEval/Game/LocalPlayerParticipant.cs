@@ -10,13 +10,13 @@ namespace NubEval.Game
         private PlayerInput _input;
         private PlayerState _state;
         private PlayerData _playerData;
-        private ParticipantID _participantID;
+        private ParticipantData _participantID;
 
         PlayerData IMatchParticipant.PlayerData => _playerData;
 
-        ParticipantID IMatchParticipant.ParticipantID => _participantID;
+        ParticipantData IMatchParticipant.ParticipantID => _participantID;
 
-        public LocalPlayerParticipant(ParticipantID id, PlayerInput input, PlayerData playerData)
+        public LocalPlayerParticipant(ParticipantData id, PlayerInput input, PlayerData playerData)
         {
             _participantID = id;
             _input = input;

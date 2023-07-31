@@ -7,7 +7,7 @@ namespace NubEval.Game
     {
         //PlayerState PlayerState { get; }
         //void ApplyState(PlayerState state);
-        ParticipantID ParticipantID { get; }
+        ParticipantData ParticipantID { get; }
         PlayerData PlayerData { get; }
         Task<PlayerAction> RequestActionAsync(PlayerTurn playerTurn, CancellationToken token);
     }

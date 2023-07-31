@@ -35,7 +35,7 @@ namespace NubEval.Game
         // Start is called before the first frame update
         private void SetState(PlayerState state)
         {
-            gameObject.transform.position = state.BoardPoistion;
+            gameObject.transform.position = new Vector3(state.BoardPoistion.x, state.BoardPoistion.y, 0);
             deadSprite.enabled = state.IsKilled;
             playerState = state;
         }
