@@ -33,13 +33,6 @@ namespace NubEval
         }
 
         public MatchStateData CurrentStateData => _matchStateData;
-        public string MatchStateJSON
-        {
-            get
-            {
-                return JsonConvert.SerializeObject(_matchStateData);
-            }
-        }
 
         public MatchStateController()
         {
@@ -80,8 +73,6 @@ namespace NubEval
         public void SetState(MatchStateData state)
         {
             _matchStateData = state;
-
-            Debug.Log(MatchStateJSON);
 
             //set next player
             NextPlayerIndex = state.Script.Turns[state.CurrentScriptStep];

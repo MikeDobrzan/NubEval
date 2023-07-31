@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using NubEval.PubNubWrapper;
 using System.Collections.Generic;
 
@@ -19,5 +20,11 @@ namespace NubEval
         public MatchTurnsScript Script { get; set; }
         public Dictionary<int, ParticipantData> Participants { get; set; }
         public Dictionary<int, PlayerState> PlayerStates { get; set; }
+
+
+        public static string MatchStateJSON(MatchStateData data)
+        {
+            return JsonConvert.SerializeObject(data);
+        }
     }
 }

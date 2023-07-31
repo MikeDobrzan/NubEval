@@ -537,6 +537,7 @@ GameObject:
   - component: {fileID: 669549883}
   - component: {fileID: 669549882}
   - component: {fileID: 669549885}
+  - component: {fileID: 669549886}
   m_Layer: 0
   m_Name: Bootloader
   m_TagString: Untagged
@@ -618,19 +619,35 @@ MonoBehaviour:
     - {x: -4.5, y: 2.5}
   playerState:
     isKilled: 0
+  _remote: {fileID: 669549886}
   mockLocalPlayerData:
     name: Rado
     color: {r: 1, g: 0, b: 0, a: 1}
   mockRemotePlayerData:
     name: Michal
     color: {r: 0, g: 0, b: 1, a: 1}
+  IamIndex: 0
+  uuid: 
+--- !u!114 &669549886
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 669549881}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa12eae3b8f2500489a616577218ea7f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
   mock_participants:
   - index: 0
     pnUser: c11e1ee7-a70e-4672-8132-8675edbdae83
   - index: 1
     pnUser: 4567-new-guid-some-user
-  IamIndex: 0
-  uuid: 
+  historyPointer: 0
+  historyRecordCount: 0
+  history: []
 --- !u!1 &871112539
 GameObject:
   m_ObjectHideFlags: 0
@@ -1732,6 +1749,26 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3063037115376233540, guid: e7cdf27908e165542bd9cbba2d163c96, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3063037115376233540, guid: e7cdf27908e165542bd9cbba2d163c96, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3063037115376233540, guid: e7cdf27908e165542bd9cbba2d163c96, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3063037115376233540, guid: e7cdf27908e165542bd9cbba2d163c96, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3063037115376233540, guid: e7cdf27908e165542bd9cbba2d163c96, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3730424723229034365, guid: e7cdf27908e165542bd9cbba2d163c96, type: 3}
       propertyPath: m_Name
       value: AppDashboard
@@ -1815,6 +1852,18 @@ PrefabInstance:
     - target: {fileID: 4584127299929282551, guid: e7cdf27908e165542bd9cbba2d163c96, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5288993741870325406, guid: e7cdf27908e165542bd9cbba2d163c96, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 669549886}
+    - target: {fileID: 5288993741870325406, guid: e7cdf27908e165542bd9cbba2d163c96, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: OnBtnMockStateUpdate
+      objectReference: {fileID: 0}
+    - target: {fileID: 5288993741870325406, guid: e7cdf27908e165542bd9cbba2d163c96, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: NubEval.RemoteMatchController, NubEval
       objectReference: {fileID: 0}
     - target: {fileID: 6180219409342676431, guid: e7cdf27908e165542bd9cbba2d163c96, type: 3}
       propertyPath: m_AnchorMax.y

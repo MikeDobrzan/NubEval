@@ -25,28 +25,23 @@ namespace NubEval.Game
         [SerializeField] private PlayerVisual remotePlayerAvatar;
         [SerializeField] private MatchSeed seed;
         [SerializeField] private PlayerState playerState;
+        [SerializeField] private RemoteMatchController _remote;
 
-        //private IMatchParticipant localPlayerParticipant;
         private Dictionary<int, IMatchParticipant> participantControllers;
         private Dictionary<int, ParticipantData> _participantDatas;
         private Dictionary<int, PlayerVisual> participantAvatars;
         
-        //public UserId ThisPlayerId;
-        //public ParticipantData thisPlayerInMatch;
-
         private MatchStateController _matchStateController;
         private PNDevice _device;
 
         private string CurrentUser => uuid;
 
-        //public Dictionary<int, PlayerState> playerStates;
-
         [SerializeField] private PlayerData mockLocalPlayerData;
         [SerializeField] private PlayerData mockRemotePlayerData;
-        [SerializeField] private List<ParticipantData> mock_participants;
 
         [Header("Debug")]
         [SerializeField] MatchStateData debug_matchStateData;
+        
         
         [Range(0, 1)]
         public int IamIndex;
@@ -55,34 +50,26 @@ namespace NubEval.Game
         public void Construct(PNDevice device)
         {
             _device = device;
+            _remote.MatchStateUpdated += OnNetworkMatchStateReceived;
         }
 
         public void OnBoot()
         {
             _matchStateController = new MatchStateController();
 
-            OnReceiveParticipants(); //jsut create mock from boot for testing
+            _participantDatas = new Dictionary<int, ParticipantData>();
+            foreach (var p in _remote.GetParticipants())
+            {
+                _participantDatas.Add(p.Index, p);
+            }
 
             MatchStateData initialMatchState = SetInitialState(seed);
             _matchStateController.SetState(initialMatchState);
 
+            _remote.MockStateUpdate(initialMatchState);
 
             OnNetworkMatchInitialStateReceived(_participantDatas);
-
-            UpdateAvatars(initialMatchState);
-
-            OnNetworkMatchStateReceived(initialMatchState);
         }
-
-        private void OnReceiveParticipants()
-        {
-            _participantDatas = new Dictionary<int, ParticipantData>();
-            foreach (var p in mock_participants)
-            {
-                _participantDatas.Add(p.Index, p);
-            }
-        }
-
 
         public void Update()
         {
@@ -94,9 +81,8 @@ namespace NubEval.Game
 
         private async void OnNetworkMatchStateReceived(MatchStateData matchState)
         {           
-            await Task.Delay(3000);
-
             _matchStateController.SetState(matchState);
+            UpdateAvatars(_matchStateController.CurrentStateData);
 
             int nextPlayer = _matchStateController.NextPlayerIndex;
 
@@ -112,14 +98,12 @@ namespace NubEval.Game
                 _matchStateController.ApplyPlayerAction(0, action);// .SetPlayerState(0, newState);
 
                 Debug.Log($"Thank you for Your Turn!: {action.MoveDir}");
-                await OnLocalPlayerEndTurn();
+                OnLocalPlayerEndTurn();
             }
             else
             {
                 Debug.Log($"Not your Turn!  wait for --> {nextPlayer}");
-            }
-
-            UpdateAvatars(_matchStateController.CurrentStateData);
+            }            
         }
 
         /// <summary>
@@ -157,11 +141,9 @@ namespace NubEval.Game
             }
         }
 
-        public async Task OnLocalPlayerEndTurn()
-        {
-            Debug.Log(_matchStateController.MatchStateJSON);
-
-            await Task.CompletedTask;
+        public void OnLocalPlayerEndTurn()
+        {           
+            _remote.MockStateUpdate(_matchStateController.CurrentStateData);
         }
 
 
