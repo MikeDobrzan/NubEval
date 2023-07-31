@@ -19,6 +19,7 @@ namespace NubEval.Game
         [Header("Services")]
         [SerializeField] private PlayerPrefsAsset DevAPlayerPrefs;
         [SerializeField] private LobbyController lobby;
+        [SerializeField] private MatchController matchController;
 
         private PNDevice _mainDevice;
         private SubscribeCallbackListener _pnGlobalListener;
@@ -35,6 +36,7 @@ namespace NubEval.Game
 
             //Controllers Boot Actions
             InitializeLobby();
+            InitializeMatchController();
 
             Debug.Log("Boot Complete!");
         }
@@ -62,6 +64,12 @@ namespace NubEval.Game
         {
             lobby.Construct(_mainDevice);
             lobby.OnBoot();
+        }
+
+        public void InitializeMatchController()
+        {
+            matchController.Construct(_mainDevice);
+            matchController.OnBoot();
         }
 
         public async void PNJoinLobby()

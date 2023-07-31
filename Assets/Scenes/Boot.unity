@@ -572,6 +572,7 @@ MonoBehaviour:
   configAsset: {fileID: 11400000, guid: aa2a3bd5b3dcb3844902d97f06fb8ab6, type: 2}
   DevAPlayerPrefs: {fileID: 11400000, guid: 6ffb11ab14b9d48488697bd3d04dda64, type: 2}
   lobby: {fileID: 669549882}
+  matchController: {fileID: 669549885}
 --- !u!4 &669549884
 Transform:
   m_ObjectHideFlags: 0
@@ -617,9 +618,6 @@ MonoBehaviour:
     - {x: -4.5, y: 2.5}
   playerState:
     isKilled: 0
-  thisPlayerInMatch:
-    index: 0
-    pnUser: 
   mockLocalPlayerData:
     name: Rado
     color: {r: 1, g: 0, b: 0, a: 1}
@@ -631,6 +629,8 @@ MonoBehaviour:
     pnUser: c11e1ee7-a70e-4672-8132-8675edbdae83
   - index: 1
     pnUser: 4567-new-guid-some-user
+  IamIndex: 0
+  uuid: 
 --- !u!1 &871112539
 GameObject:
   m_ObjectHideFlags: 0

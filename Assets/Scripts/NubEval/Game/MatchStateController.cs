@@ -77,7 +77,7 @@ namespace NubEval
             _matchStateData.PlayerStates[id] = newState;
         }
 
-        public void NetworkPublishState(MatchStateData state)
+        public void SetState(MatchStateData state)
         {
             _matchStateData = state;
 
