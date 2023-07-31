@@ -10,9 +10,11 @@ namespace NubEval
     {
         private MatchStateData _matchStateData;
      
+        //TODO: modify state data directly?;
         private readonly  Dictionary<int, PlayerState> _playersStates = new Dictionary<int, PlayerState>();
 
         public int NextPlayer { get; private set; }
+        public MatchStateData CurrentStateData => _matchStateData;
 
         public MatchStateController()
         {
@@ -38,10 +40,11 @@ namespace NubEval
             //Set the new state 
             SetPlayerState(id, newState);
 
-            //---------------------------------> !!!!!!! TODO: update state data
+            //update state data
+            _matchStateData.PlayerStates[new ParticipantID(id)] = newState;
         }
 
-        public void NetworkSetState(MatchStateData state)
+        public void NetworkPublishState(MatchStateData state)
         {
             _matchStateData = state;
 
@@ -49,9 +52,9 @@ namespace NubEval
             NextPlayer = state.Script.Turns[state.CurrentScriptStep];
 
             //replace states
-            foreach (var record in state.PlayerStates)
+            foreach (var key in state.PlayerStates.Keys)
             {
-                _playersStates[record.Key] = state.PlayerStates[record.Key];
+                _playersStates[key.Index] = state.PlayerStates[key];
             }
         }
 

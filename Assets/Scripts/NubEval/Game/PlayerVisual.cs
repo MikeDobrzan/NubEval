@@ -17,7 +17,6 @@ namespace NubEval.Game
 
         [Header("Debug")]
         [SerializeField] private PlayerState playerState;
-        [SerializeField] private PlayerData plData;
 
         public event Action<PlayerState, PlayerAction> PlayerActionRequested;
 
@@ -47,16 +46,21 @@ namespace NubEval.Game
             mainSprite.color = data.Color;
         }
 
-        // Update is called once per frame
-        void Update()
+        public void UpdateData(PlayerData data, bool local = false)
         {
-            //SetState(playerState);
-            SetVisual(plData);
+            SetVisual(data);
+            SetAsLocalPlayer(local, data);               
         }
 
         public void UpdateState(PlayerState state)
         {
             SetState(state);
+        }
+
+        public void SetAsLocalPlayer(bool local, PlayerData data)
+        {
+            nameText.color = local ? Color.green : Color.white;
+            nameText.text = local ? data.Name + " (You)" : data.Name;
         }
 
         private void OnInputMove(PlayerInput.InputMoveDir dir)

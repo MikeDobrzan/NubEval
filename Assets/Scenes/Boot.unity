@@ -150,6 +150,86 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e8c88b25d2c1fe49a83e45ac45252ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1001 &418536818
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 3488382900664119154, guid: 742d52c22c44b6742b839d565c3ad037, type: 3}
+      propertyPath: _input
+      value: 
+      objectReference: {fileID: 892142367}
+    - target: {fileID: 7008109252217694523, guid: 742d52c22c44b6742b839d565c3ad037, type: 3}
+      propertyPath: m_Name
+      value: RemotePlayer
+      objectReference: {fileID: 0}
+    - target: {fileID: 7008109252217694523, guid: 742d52c22c44b6742b839d565c3ad037, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7517660795288859453, guid: 742d52c22c44b6742b839d565c3ad037, type: 3}
+      propertyPath: m_RootOrder
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 7517660795288859453, guid: 742d52c22c44b6742b839d565c3ad037, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -1.26
+      objectReference: {fileID: 0}
+    - target: {fileID: 7517660795288859453, guid: 742d52c22c44b6742b839d565c3ad037, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -1.83
+      objectReference: {fileID: 0}
+    - target: {fileID: 7517660795288859453, guid: 742d52c22c44b6742b839d565c3ad037, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7517660795288859453, guid: 742d52c22c44b6742b839d565c3ad037, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7517660795288859453, guid: 742d52c22c44b6742b839d565c3ad037, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7517660795288859453, guid: 742d52c22c44b6742b839d565c3ad037, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7517660795288859453, guid: 742d52c22c44b6742b839d565c3ad037, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7517660795288859453, guid: 742d52c22c44b6742b839d565c3ad037, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7517660795288859453, guid: 742d52c22c44b6742b839d565c3ad037, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7517660795288859453, guid: 742d52c22c44b6742b839d565c3ad037, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 742d52c22c44b6742b839d565c3ad037, type: 3}
+--- !u!114 &426731210 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3488382900664119154, guid: 742d52c22c44b6742b839d565c3ad037, type: 3}
+  m_PrefabInstance: {fileID: 418536818}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f24c66cce27c6244abc4a190f6b13c1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -452,13 +532,20 @@ MonoBehaviour:
     progress: 0
   playerInput: {fileID: 892142367}
   thisPlayerAvatar: {fileID: 136754617}
+  remotePlayerAvatar: {fileID: 426731210}
   seed:
     Script:
-      turns: eb0000000100000000000000010000000000000001000000
+      turns: 000000000100000000000000010000000000000001000000
     StartLocations:
     - {x: 3, y: -1}
-    - {x: -3, y: 1}
+    - {x: -4.5, y: 2.5}
   thisPlayerInMatch: 0
+  mockLocalPlayerData:
+    name: Rado
+    color: {r: 1, g: 0, b: 0, a: 1}
+  mockRemotePlayerData:
+    name: Michal
+    color: {r: 0, g: 0, b: 1, a: 1}
 --- !u!224 &892142366 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 7085585362852485490, guid: 27398cd3c1303154eb0e7e9f9fa2456f, type: 3}
@@ -776,6 +863,10 @@ PrefabInstance:
     - target: {fileID: 7008109252217694523, guid: 742d52c22c44b6742b839d565c3ad037, type: 3}
       propertyPath: m_Name
       value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 7008109252217694523, guid: 742d52c22c44b6742b839d565c3ad037, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7517660795288859453, guid: 742d52c22c44b6742b839d565c3ad037, type: 3}
       propertyPath: m_RootOrder

@@ -9,10 +9,18 @@ namespace NubEval.Game
         private PlayerTurn _playerTurn;
         private PlayerInput _input;
         private PlayerState _state;
+        private PlayerData _playerData;
+        private ParticipantID _participantID;
 
-        public LocalPlayerParticipant(PlayerInput input)
+        PlayerData IMatchParticipant.PlayerData => _playerData;
+
+        ParticipantID IMatchParticipant.ParticipantID => _participantID;
+
+        public LocalPlayerParticipant(ParticipantID id, PlayerInput input, PlayerData playerData)
         {
+            _participantID = id;
             _input = input;
+            _playerData = playerData;
 
             _input.InputDirUpdate += OnInputMove;
             _input.InputPunch += OnPunch;
@@ -20,7 +28,7 @@ namespace NubEval.Game
 
         private void OnInputMove(PlayerInput.InputMoveDir dir)
         {
-            if (_playerTurn.Completed)
+            if (_playerTurn == null || _playerTurn.Completed)
                 return;
 
             Debug.Log($"Move: {dir}");
@@ -31,7 +39,7 @@ namespace NubEval.Game
 
         private void OnPunch()
         {
-            if (_playerTurn.Completed)
+            if (_playerTurn == null || _playerTurn.Completed)
                 return;
 
             Debug.Log($"Punch!");
