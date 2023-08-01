@@ -37,6 +37,11 @@ namespace NubEval
         public float x { get; set; }
         public float y { get; set; }
 
+        public override string ToString()
+        {
+            return $"float2({x},{y})";
+        }
+
         public static implicit operator Vector2(float2 f)
         {
             return new Vector2(f.x, f.y);

@@ -26,6 +26,7 @@ namespace NubEval.Game
         [SerializeField] private PlayerInput playerInput;
         [SerializeField] private PlayerVisual avatarPrefab;
         [SerializeField] private RemoteMatchController _remote;
+        [SerializeField] private MatchHistory _history;
 
         [Header("Debug")]
         [SerializeField] private MatchSeed seed;
@@ -52,6 +53,7 @@ namespace NubEval.Game
             _device.RemoteEventsMatch.SubscribeMatchEvents(this);
 
             _remote.Construct(device);
+            _history.Construct(device, this);
             _matchStateController = new MatchStateController();
             participantAvatars = new Dictionary<int, PlayerVisual>();
         }
@@ -65,6 +67,7 @@ namespace NubEval.Game
             
             await _device.Subscriptions.Subscribe<MatchStateData>(matchChannel);
             _remote.SetChannel(matchChannel);
+            _history.SetChannel(matchChannel);
 
             await Task.Delay(3000);
             _device.Console.Log($"Match Started:  ch={matchChannel.PubNubAddress}");

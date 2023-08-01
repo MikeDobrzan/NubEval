@@ -1,6 +1,7 @@
 using Newtonsoft.Json;
 using NubEval.Game.Networking;
 using PubnubApi;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -50,6 +51,31 @@ namespace NubEval.PubNubWrapper
                 .ExecuteAsync();
 
             Debug.Log($"[DeleteFromHistory]{JsonConvert.SerializeObject(response)}");
+        }
+
+        public async Task<List<T>> HistoryGetLast25<T>(Channel channel)
+        {
+            var response = await PNApi.FetchHistory()
+                .Channels(new string[] { channel.PubNubAddress })
+                .IncludeMeta(false)
+                .MaximumPerChannel(25)
+                .ExecuteAsync();
+
+            Dictionary<string, List<PNHistoryItemResult>> resultDict = response.Result.Messages;
+
+            List<T> msgList = new List<T>();
+
+            foreach (var resultList in resultDict.Values)
+            {
+                foreach (var obj in resultList)
+                {
+                    string str = JsonConvert.SerializeObject(obj.Entry);
+                    msgList.Add(JsonConvert.DeserializeObject<T>(str));
+                    Debug.Log(JsonConvert.SerializeObject(obj.Entry));
+                }
+            }
+
+            return msgList;
         }
     }
 }
