@@ -1,10 +1,12 @@
 using NubEval.DevTools;
 using NubEval.Game.Networking;
+using NubEval.Game.Networking.Payload;
 using NubEval.PubNubWrapper;
 using NubEval.PubNubWrapper.ScriptableObjects;
 using PubnubApi.Unity;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace NubEval.Game
@@ -28,11 +30,11 @@ namespace NubEval.Game
 
         public event Action<PNDevice> OnPubNubDeviceInitialized;
 
-        private void Awake()
+        private async void Awake()
         {
             //Network Boot Actions
             InitializePubNub();
-            SubscribeToSystemChannels();
+            await SubscribeToSystemChannels();
 
             //Controllers Boot Actions
             InitializeLobby();
@@ -41,7 +43,7 @@ namespace NubEval.Game
             Debug.Log("Boot Complete!");
         }
 
-        public async void SubscribeToSystemChannels()
+        public async Task SubscribeToSystemChannels()
         {
             List<Channel> channels = new List<Channel>
             {
@@ -51,6 +53,7 @@ namespace NubEval.Game
 
             await _mainDevice.Subscriptions.SubscribeChannels(channels);
             await _mainDevice.Subscriptions.Subscribe<MatchStateData>(Channels.DebugMatchStates);
+            //await Task.Delay(4000);
         }
 
         public void InitializePubNub()
@@ -69,7 +72,7 @@ namespace NubEval.Game
 
         public void InitializeMatchController()
         {
-            matchController.Construct(_mainDevice);
+            matchController.Construct(_mainDevice, DevAPlayerPrefs.PnUserID);
             matchController.OnBoot();
         }
 

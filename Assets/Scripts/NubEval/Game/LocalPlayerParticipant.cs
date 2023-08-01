@@ -31,7 +31,7 @@ namespace NubEval.Game
             if (_playerTurn == null || _playerTurn.Completed)
                 return;
 
-            Debug.Log($"Move: {dir}");
+            //Debug.Log($"Move: {dir}");
 
             _playerTurn.PlayerAction = MakePlayerAction(dir);
             _playerTurn.Complete();
@@ -42,7 +42,7 @@ namespace NubEval.Game
             if (_playerTurn == null || _playerTurn.Completed)
                 return;
 
-            Debug.Log($"Punch!");
+            //Debug.Log($"Punch!");
         }
 
         private PlayerAction MakePlayerAction(PlayerInput.InputMoveDir dir)

@@ -17,13 +17,13 @@ namespace NubEval
 
         private PNDevice _device;
 
-        public List<MatchStateData> history;
-
-        public event Action<MatchStateData> MatchStateUpdated;
+        private List<MatchStateData> _history;
+        public List<MatchStateData> History => _history;
 
         public void Construct(PNDevice device)
         {
             _device = device;
+            _history = new List<MatchStateData>();
         }
 
         public List<ParticipantData> GetParticipants()
@@ -37,28 +37,21 @@ namespace NubEval
             return participantDatas;
         }
 
-
-        public async void MockStateUpdate(MatchStateData state)
+        public async void PublishStateUpdate(MatchStateData state)
         {
-            await Task.Delay(1000);
-
-            history.Add(state);
-            historyRecordCount = history.Count;
-
-            await _device.MessageDispatcher.SendMsg(state, Channels.DebugChannel);
+            await _device.MessageDispatcher.SendMsg(state, Channels.DebugMatchStates);
             Debug.Log(MatchStateData.MatchStateJSON(state));
-            MatchStateUpdated?.Invoke(state);
+            _history.Add(state);
+            historyRecordCount = _history.Count;
         }
 
         public async void OnBtnMockStateUpdate()
         {
-            //MatchStateUpdated?.Invoke(history[historyPointer]);
-            await _device.MessageDispatcher.SendMsg(history[0], Channels.DebugMatchStates);
+            await _device.MessageDispatcher.SendMsg(_history[historyPointer], Channels.DebugMatchStates);
         }
 
         public async void OnBtnSendParticiapntData()
         {
-            //MatchStateUpdated?.Invoke(history[historyPointer]);
             await _device.MessageDispatcher.SendMsg(participantData, Channels.DebugMatchStates);
         }
     }
