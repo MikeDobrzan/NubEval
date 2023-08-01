@@ -17,55 +17,57 @@ namespace NubEval.Game
     public class MatchController : MonoBehaviour,
         IMatchEventSubscriber
     {
-        public int MatchID;
+        [Header("Match Data")]
         public MatchConfig Config;
-        public MatchRoomStatus MatchStatus;
-        public DateTime MatchStart;
+        public MatchProgress MatchStatus;
+        //public DateTime MatchStart;
 
+        [Header("Components")]
         [SerializeField] private PlayerInput playerInput;
         [SerializeField] private PlayerVisual avatarPrefab;
-        //[SerializeField] private PlayerVisual remotePlayerAvatar;
-        [SerializeField] private MatchSeed seed;
-        [SerializeField] private PlayerState playerState;
         [SerializeField] private RemoteMatchController _remote;
 
+        [Header("Debug")]
+        [SerializeField] private MatchSeed seed;
+        [SerializeField] MatchStateData debug_matchStateData;
+        [SerializeField] bool historyMode;
+        [SerializeField][Range(0, 10)] int historyPointer;
         [SerializeField] public string _user;
         [SerializeField] public bool debug_isMatchHost;
-
-        private Dictionary<int, IMatchParticipant> participantControllers;
-
-        private Dictionary<int, PlayerVisual> participantAvatars;
-
-        private MatchStateController _matchStateController;
-        private PNDevice _device;
-
-        private string CurrentUser => _user;
         [SerializeField] private List<ParticipantData> mock_participantDatas;
         [SerializeField] private List<PlayerData> mockPlayerData;
 
-        [Header("Debug")]
-        [SerializeField] MatchStateData debug_matchStateData;
-        [SerializeField] bool historyMode;
-        [Range(0, 10)]
-        [SerializeField] int historyPointer;
-
-        private bool _controllersInitialized;
-        private bool matchEnded;
+        private Dictionary<int, IMatchParticipant> participantControllers;
+        private Dictionary<int, PlayerVisual> participantAvatars;
+        private MatchStateController _matchStateController;
+        private PNDevice _device;
+       
+        private bool ControllersInitialized { get; set; }
+        private string CurrentUser => _user;
 
         public void Construct(PNDevice device, UserId user)
         {
             _user = user;
             _device = device;
+            _device.RemoteEventsMatch.SubscribeMatchEvents(this);
+
             _remote.Construct(device);
+            _matchStateController = new MatchStateController();
+            participantAvatars = new Dictionary<int, PlayerVisual>();
         }
 
-        public void OnBoot()
+        public async Task OnBoot()
         {
-            matchEnded = false;
+            MatchStatus = MatchProgress.inProgress;
 
-            _matchStateController = new MatchStateController();
-            _device.RemoteEventsMatch.SubscribeMatchEvents(this);
-            participantAvatars = new Dictionary<int, PlayerVisual>();
+            //Get comm channel from the match id and subscribe
+            Channel matchChannel = Channels.GetMatchChannel(Config.MatchID);
+            
+            await _device.Subscriptions.Subscribe<MatchStateData>(matchChannel);
+            _remote.SetChannel(matchChannel);
+
+            await Task.Delay(3000);
+            _device.Console.Log($"Match Started:  ch={matchChannel.PubNubAddress}");
 
             if (debug_isMatchHost)
             {
@@ -90,13 +92,13 @@ namespace NubEval.Game
 
         private async void OnNetworkMatchStateReceived(MatchStateData matchState)
         {
-            if (matchEnded)
+            if (MatchStatus == MatchProgress.ended)
             {
                 Debug.Log($"The match is Over");
                 return;
             }
 
-            if (!_controllersInitialized)
+            if (!ControllersInitialized)
                 InitializeParticiapants(matchState);
 
             _matchStateController.SetState(matchState);
@@ -109,7 +111,7 @@ namespace NubEval.Game
                 int currentPlayerIndex = _matchStateController.GetPlayerIndex(CurrentUser);
 
                 Debug.Log($"Make Your Turn! --> {nextPlayer}");
-                var cts = new CancellationTokenSource(20000);
+                var cts = new CancellationTokenSource(60000);
 
                 var playerTurn = PlayerTurn.NewTurn();
                 var action = await participantControllers[currentPlayerIndex].RequestActionAsync(playerTurn, cts.Token);
@@ -180,7 +182,7 @@ namespace NubEval.Game
                 participantDict.Add(i, participantData);
             }
 
-            _controllersInitialized = true;
+            ControllersInitialized = true;
 
             return new MatchStateData(0, participantDict, playerStates, seed.Script);
         }
@@ -211,7 +213,7 @@ namespace NubEval.Game
                 participantControllers.Add(pData.Value.Index, pController);
             }
 
-            _controllersInitialized = true;
+            ControllersInitialized = true;
         }
 
 
@@ -253,7 +255,9 @@ namespace NubEval.Game
 
         async Task IMatchEventSubscriber.OnMatchStateUpdate(MatchStateData matchStateData)
         {
-            matchEnded = matchStateData.CurrentScriptStep >= matchStateData.Script.Turns.Count - 1;
+            if (matchStateData.CurrentScriptStep >= matchStateData.Script.Turns.Count - 1)
+                MatchStatus = MatchProgress.ended;
+
             OnNetworkMatchStateReceived(matchStateData);
 
             //Debug.Log($"[NetworkUpdate] (MatchStateData): {JsonConvert.SerializeObject(matchStateData)}");

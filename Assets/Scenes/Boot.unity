@@ -510,24 +510,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a7bfb697f19ca38499cb2b2cae908e2d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MatchID: 0
   Config:
-    matchID: 0
-    type: 0
-    name: 
-  MatchStatus:
-    progress: 0
+    matchID: 803
+    type: 1
+    name: My Test Match
+  MatchStatus: 1
   playerInput: {fileID: 892142367}
   avatarPrefab: {fileID: 3488382900664119154, guid: 742d52c22c44b6742b839d565c3ad037, type: 3}
+  _remote: {fileID: 669549886}
   seed:
     Script:
       turns: 000000000100000000000000010000000000000001000000
     StartLocations:
     - {x: 3, y: -1}
     - {x: -4.5, y: 2.5}
-  playerState:
-    isKilled: 0
-  _remote: {fileID: 669549886}
+  historyMode: 0
+  historyPointer: 0
   _user: 
   debug_isMatchHost: 1
   mock_participantDatas:
@@ -540,8 +538,6 @@ MonoBehaviour:
     color: {r: 0, g: 0.38679248, b: 0, a: 1}
   - name: Nasus
     color: {r: 0.17123532, g: 0.50099117, b: 0.9811321, a: 1}
-  historyMode: 0
-  historyPointer: 0
 --- !u!114 &669549886
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -87,11 +87,8 @@ namespace NubEval.Game.Networking
                 //filter debug messages
             }
 
-            if (result.Channel == Channels.DebugMatchStates.PubNubAddress)
-            {
-                var cts = new CancellationTokenSource(3000);
-                await _handlerMatchEvents.OnEventAsync(result, cts.Token);
-            }
+            var cts = new CancellationTokenSource(3000);
+            await _handlerMatchEvents.OnEventAsync(result, cts.Token);
 
             _pnDevice.Console.Log($"[MSG]: ch={result.Channel} | {result.Message} | {result.Publisher} | {result.Timetoken}");
         }

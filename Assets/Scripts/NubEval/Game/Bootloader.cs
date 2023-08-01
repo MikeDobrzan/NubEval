@@ -52,7 +52,7 @@ namespace NubEval.Game
             };
 
             await _mainDevice.Subscriptions.SubscribeChannels(channels);
-            await _mainDevice.Subscriptions.Subscribe<MatchStateData>(Channels.DebugMatchStates);
+            //await _mainDevice.Subscriptions.Subscribe<MatchStateData>(Channels.DebugMatchStates);
             //await Task.Delay(4000);
         }
 
@@ -70,10 +70,10 @@ namespace NubEval.Game
             lobby.OnBoot();
         }
 
-        public void InitializeMatchController()
+        public async void InitializeMatchController()
         {
             matchController.Construct(_mainDevice, DevAPlayerPrefs.PnUserID);
-            matchController.OnBoot();
+            await matchController.OnBoot();
         }
 
         public async void PNJoinLobby()

@@ -20,10 +20,17 @@ namespace NubEval
         private List<MatchStateData> _history;
         public List<MatchStateData> History => _history;
 
+        private Channel _channel;
+
         public void Construct(PNDevice device)
         {
             _device = device;
             _history = new List<MatchStateData>();
+        }
+
+        public void SetChannel(Channel channel)
+        {
+            _channel = channel;
         }
 
         public List<ParticipantData> GetParticipants()
@@ -39,8 +46,8 @@ namespace NubEval
 
         public async void PublishStateUpdate(MatchStateData state)
         {
-            await _device.MessageDispatcher.SendMsg(state, Channels.DebugMatchStates);
-            Debug.Log(MatchStateData.MatchStateJSON(state));
+            await _device.MessageDispatcher.SendMsg(state, _channel);
+            //Debug.Log(MatchStateData.MatchStateJSON(state));
             _history.Add(state);
             historyRecordCount = _history.Count;
         }
