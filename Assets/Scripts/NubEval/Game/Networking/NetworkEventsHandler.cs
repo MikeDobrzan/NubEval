@@ -8,24 +8,30 @@ namespace NubEval.Game.Networking
 {
     public class NetworkEventsHandler :
         INetworkEventHandler,
-        IRemoteLobbyEventsListener
+        IRemoteLobbyEventsListener,
+        IMatchEventsListener
     {
         private readonly PNDevice _pnDevice;
         private readonly UserDeviceData _deviceData;
         private readonly List<ILobbyEventsSubscriber> _lobbyEventsSubscribers;
+        private readonly List<IMatchEventSubscriber> _matchEventsSubscribers;
         private readonly Pubnub _pnApi;
 
         private readonly IPresenceEventHandler _handlerLobbyPresence;
         private readonly IPresenceEventHandler _handlerDebugPresence;
+        private readonly IMessageEventHandler _handlerMatchEvents;
 
         public NetworkEventsHandler(Pubnub api, PNDevice pubnub, UserDeviceData device)
         {
             _lobbyEventsSubscribers = new List<ILobbyEventsSubscriber>();
+            _matchEventsSubscribers = new List<IMatchEventSubscriber>();
+
             _pnDevice = pubnub;
             _deviceData = device;
             _pnApi = api;
 
             _handlerLobbyPresence = new LobbyPresenceEventsHandler(pubnub, _lobbyEventsSubscribers);
+            _handlerMatchEvents = new MatchEventsHandler(pubnub, _matchEventsSubscribers);
         }
 
         void IRemoteLobbyEventsListener.SubscribeToLobbyEvents(ILobbyEventsSubscriber subscriber)
@@ -34,6 +40,14 @@ namespace NubEval.Game.Networking
                 _lobbyEventsSubscribers.Add(subscriber);
 
             _pnDevice.Console.Log($"subs: {_lobbyEventsSubscribers.Count}");
+        }
+
+        void IMatchEventsListener.SubscribeMatchEvents(IMatchEventSubscriber subscriber)
+        {
+            if (!_matchEventsSubscribers.Contains(subscriber))
+                _matchEventsSubscribers.Add(subscriber);
+
+            _pnDevice.Console.Log($"[SubscribeMatchEvents] subs: {_lobbyEventsSubscribers.Count}");
         }
 
         void INetworkEventHandler.OnPnStatus(Pubnub pn, PNStatus status)
@@ -63,10 +77,21 @@ namespace NubEval.Game.Networking
             _pnDevice.Console.Log($"[Status]: {status.Operation} | {channels}");
         }
 
-        void INetworkEventHandler.OnPnMessage(Pubnub pn, PNMessageResult<object> result)
+        async void INetworkEventHandler.OnPnMessage(Pubnub pn, PNMessageResult<object> result)
         {
             if (FindListenerTarget(pn))
                 return;
+
+            if (result.Channel == Channels.DebugChannel.PubNubAddress)
+            {
+                //filter debug messages
+            }
+
+            if (result.Channel == Channels.DebugMatchStates.PubNubAddress)
+            {
+                var cts = new CancellationTokenSource(3000);
+                await _handlerMatchEvents.OnEventAsync(result, cts.Token);
+            }
 
             _pnDevice.Console.Log($"[MSG]: ch={result.Channel} | {result.Message} | {result.Publisher} | {result.Timetoken}");
         }
@@ -133,6 +158,8 @@ namespace NubEval.Game.Networking
 
             return false;
         }
+
+
     }
 }
 

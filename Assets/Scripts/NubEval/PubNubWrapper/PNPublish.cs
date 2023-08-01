@@ -34,7 +34,9 @@ namespace NubEval.PubNubWrapper
             {
                 var id = new MessageID(channel.PubNubAddress, response.Result.Timetoken);
 
-                Debug.Log($"msg({id.Channel},{id.Timetoken}) : SENT");
+                string json = JsonConvert.SerializeObject(obj);
+
+                //Debug.Log($"msg({id.Channel},{id.Timetoken}) : SENT: {obj}");
                 return (true, id);
             }
         }

@@ -1,4 +1,5 @@
 using NubEval.Game.Data;
+using NubEval.Game.Networking;
 using NubEval.Game.Networking.Payload;
 using NubEval.PubNubWrapper;
 using PubnubApi;
@@ -13,7 +14,8 @@ using UnityEngine.PlayerLoop;
 namespace NubEval.Game
 {
     [System.Serializable]
-    public class MatchController : MonoBehaviour
+    public class MatchController : MonoBehaviour,
+        IMatchEventSubscriber
     {
         public int MatchID;
         public MatchConfig Config;
@@ -51,11 +53,13 @@ namespace NubEval.Game
         {
             _device = device;
             _remote.MatchStateUpdated += OnNetworkMatchStateReceived;
+            _remote.Construct(device);
         }
 
         public void OnBoot()
         {
             _matchStateController = new MatchStateController();
+            _device.RemoteEventsMatch.SubscribeMatchEvents(this);
 
             _participantDatas = new Dictionary<int, ParticipantData>();
             foreach (var p in _remote.GetParticipants())
@@ -181,6 +185,15 @@ namespace NubEval.Game
         private void OnDisable()
         {
             Dispose();
+        }
+
+        async Task IMatchEventSubscriber.OnMatchStateUpdate(MatchStateData matchStateData)
+        {
+            //OnNetworkMatchStateReceived(matchStateData);
+
+            UpdateAvatars(matchStateData);
+
+            Debug.Log("Controller received match update");
         }
     }
 }

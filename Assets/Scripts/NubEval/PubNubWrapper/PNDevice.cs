@@ -50,6 +50,7 @@ namespace NubEval.PubNubWrapper
         public PNPresence Presence => _presence;
         public PNSubscribe Subscriptions => _subscribe;
         public IRemoteLobbyEventsListener RemoteEventsLobby => _networkEventsHandler;
+        public IMatchEventsListener RemoteEventsMatch => _networkEventsHandler;
         public INetworkEventHandler NetworkEventsHandler => _networkEventsHandler;
         public PNDeviceConsole Console => _console;
 

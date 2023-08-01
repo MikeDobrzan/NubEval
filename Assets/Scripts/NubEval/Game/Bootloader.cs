@@ -50,6 +50,7 @@ namespace NubEval.Game
             };
 
             await _mainDevice.Subscriptions.SubscribeChannels(channels);
+            await _mainDevice.Subscriptions.Subscribe<MatchStateData>(Channels.DebugMatchStates);
         }
 
         public void InitializePubNub()

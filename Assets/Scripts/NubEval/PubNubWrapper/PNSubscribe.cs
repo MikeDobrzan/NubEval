@@ -55,6 +55,16 @@ namespace NubEval.PubNubWrapper
 
             //PNDevice.Console.Log($"[SubscribeChannels] {channels[0].PubNubAddress}");
         }
+
+        public async Task Subscribe<T>(Channel channel)
+        {
+            PNApi.Subscribe<T>()
+                .Channels(new[] { channel.PubNubAddress })
+                .WithPresence()
+                .Execute();
+
+            await Task.Delay(1000);
+        }
     }
 }
 

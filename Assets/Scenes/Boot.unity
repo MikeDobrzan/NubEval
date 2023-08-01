@@ -647,6 +647,9 @@ MonoBehaviour:
     pnUser: 4567-new-guid-some-user
   historyPointer: 0
   historyRecordCount: 0
+  participantData:
+    index: 0
+    pnUser: 
   history: []
 --- !u!1 &871112539
 GameObject:
@@ -1853,6 +1856,18 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5236227603512896419, guid: e7cdf27908e165542bd9cbba2d163c96, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 669549886}
+    - target: {fileID: 5236227603512896419, guid: e7cdf27908e165542bd9cbba2d163c96, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: OnBtnSendParticiapntData
+      objectReference: {fileID: 0}
+    - target: {fileID: 5236227603512896419, guid: e7cdf27908e165542bd9cbba2d163c96, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: NubEval.RemoteMatchController, NubEval
+      objectReference: {fileID: 0}
     - target: {fileID: 5288993741870325406, guid: e7cdf27908e165542bd9cbba2d163c96, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
@@ -1943,6 +1958,26 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8494779816038856636, guid: e7cdf27908e165542bd9cbba2d163c96, type: 3}
       propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8560108373464156117, guid: e7cdf27908e165542bd9cbba2d163c96, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8560108373464156117, guid: e7cdf27908e165542bd9cbba2d163c96, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8560108373464156117, guid: e7cdf27908e165542bd9cbba2d163c96, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8560108373464156117, guid: e7cdf27908e165542bd9cbba2d163c96, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8560108373464156117, guid: e7cdf27908e165542bd9cbba2d163c96, type: 3}
+      propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
